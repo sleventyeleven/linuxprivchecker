@@ -1,5 +1,6 @@
 
-[Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script
+
+linuxprivchecker.py -- a Linux Privilege Escalation Check Script
 [Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
 -------------------------------------------------------------------------------------------------------------
 Details]: 
