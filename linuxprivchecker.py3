@@ -3,6 +3,7 @@
 ###############################################################################################################
 ## [Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script
 ## [Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
+## [Updater]: Mike Merrill (linted)
 ##-------------------------------------------------------------------------------------------------------------
 ## [Details]: 
 ## This script is intended to be executed locally on a Linux box to enumerate basic system info and 
@@ -164,16 +165,14 @@ else:
     getPkgs = "rpm -qa | sort -u" # RH/other
 
 getAppProc = {"PROCS":{"cmd":"ps aux | awk '{print $1,$2,$9,$10,$11}'", "msg":"Current processes", "results":results},
-              "PKGS":{"cmd":getPkgs, "msg":"Installed Packages", "results":results}
-         }
+              "PKGS":{"cmd":getPkgs, "msg":"Installed Packages", "results":results}}
 
 getAppProc = execCmd(getAppProc)
 printResults(getAppProc) # comment to reduce output
 
 otherApps = { "SUDO":{"cmd":"sudo -V | grep version 2>/dev/null", "msg":"Sudo Version (Check out http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=sudo)", "results":results},
           "APACHE":{"cmd":"apache2 -v; apache2ctl -M; httpd -v; apachectl -l 2>/dev/null", "msg":"Apache Version and Modules", "results":results},
-          "APACHECONF":{"cmd":"cat /etc/apache2/apache2.conf 2>/dev/null", "msg":"Apache Config File", "results":results}
-        }
+          "APACHECONF":{"cmd":"cat /etc/apache2/apache2.conf 2>/dev/null", "msg":"Apache Config File", "results":results}}
 
 otherApps = execCmd(otherApps)
 printResults(otherApps)
@@ -324,40 +323,38 @@ highprob = []
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 for sploit in sploits:
-    lang = 0 # use to rank applicability of sploits
     keyword = sploits[sploit]["keywords"]["val"]
     sploitout = sploit + " || " + "http://www.exploit-db.com/exploits/" + sploits[sploit]["exploitdb"] + " || " + "Language=" + sploits[sploit]["lang"]
     # first check for kernell applicability
     if (version >= sploits[sploit]["minver"]) and (version <= sploits[sploit]["maxver"]):
         # next check language applicability
         if (sploits[sploit]["lang"] == "c") and (("gcc" in str(langs)) or ("cc" in str(langs))):
-            lang = 1 # language found, increase applicability score 
+            pass # language found, increase applicability score 
         elif sploits[sploit]["lang"] == "sh": 
-            lang = 1 # language found, increase applicability score 
+            pass # language found, increase applicability score 
         elif (sploits[sploit]["lang"] in str(langs)):
-            lang = 1 # language found, increase applicability score
-        if lang == 0:
+            pass # language found, increase applicability score
+        else:
             sploitout = sploitout + "**" # added mark if language not detected on system 
-    # next check keyword matches to determine if some sploits have a higher probability of success
-    for loc in sploits[sploit]["keywords"]["loc"]:
-        if loc == "proc":
-            for proc in procs:
-                if keyword in proc:
-                    highprob.append(sploitout) # if sploit is associated with a running process consider it a higher probability/applicability
-                    break
-            break
-        elif loc == "os":
-            if (keyword in os) or (keyword in kernel):
-                highprob.append(sploitout) # if sploit is specifically applicable to this OS consider it a higher probability/applicability
-                break  
-        elif loc == "mnt":
-            if keyword in mount:
-                highprob.append(sploitout) # if sploit is specifically applicable to a mounted file system consider it a higher probability/applicability
+        # next check keyword matches to determine if some sploits have a higher probability of success
+        for loc in sploits[sploit]["keywords"]["loc"]:
+            if loc == "proc":
+                for proc in procs:
+                    if keyword in proc:
+                        highprob.append(sploitout) # if sploit is associated with a running process consider it a higher probability/applicability
+                        break
                 break
-    else:
-        avgprob.append(sploitout) # otherwise, consider average probability/applicability based only on kernel version
+            elif loc == "os":
+                if (keyword in os) or (keyword in kernel):
+                    highprob.append(sploitout) # if sploit is specifically applicable to this OS consider it a higher probability/applicability
+                    break  
+            elif loc == "mnt":
+                if keyword in mount:
+                    highprob.append(sploitout) # if sploit is specifically applicable to a mounted file system consider it a higher probability/applicability
+                    break
+        else:
+            avgprob.append(sploitout) # otherwise, consider average probability/applicability based only on kernel version
 
 print("    Note: Exploits relying on a compile/scripting language not detected on this system are marked with a '**' but should still be tested!\n")
 
