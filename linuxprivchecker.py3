@@ -25,10 +25,12 @@
 
 # conditional import for older versions of python not compatible with subprocess
 try:
-    import subprocess as sub
+    #import subprocess as sub
+    from subprocess import run, PIPE
     compatmode = 0 # newer version of python, no need for compatibility mode
 except ImportError:
-    import os # older version of python, need to use os instead
+    #import os # older version of python, need to use ### instead
+    from subprocess import check_output, PIPE
     compatmode = 1
 
 # title / formatting
@@ -37,19 +39,24 @@ smlline = "---------------------------------------------------------------------
 
 print(bigline)
 print("LINUX PRIVILEGE ESCALATION CHECKER")
-print(bigline + '\n')
+print(bigline)
+print("")
 
 # loop through dictionary, execute the commands, store the results, return updated dict
 def execCmd(cmdDict):
     for item in cmdDict:
         cmd = cmdDict[item]["cmd"]
-        if compatmode == 0: # newer version of python, use preferred subprocess
-            out, error = sub.Popen([cmd], stdout=sub.PIPE, stderr=sub.PIPE, shell=True).communicate()
-            results = out.decode().split('\n')
-        else: # older version of python, use os.popen
-            echo_stdout = os.popen(cmd, 'r')  
-            results = echo_stdout.read().split('\n')
+        try:
+            if compatmode == 0: # newer version of python, use preferred subprocess
+                process = run(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+                results = process.stdout.decode().split('\n')
+            else: # older version of python, use os.popen
+                echo_stdout = check_output(cmd, shell=True)  
+                results = stdout.decode().split('\n')
+        except Exception as e:
+            results = '[-] failed: {}'.format(e)
         cmdDict[item]["results"]=results
+        
     return cmdDict
 
 # print results for each previously executed command, no return value
@@ -61,7 +68,7 @@ def printResults(cmdDict):
         for result in results:
             if result.strip() != "":
                 print( "    " + result.strip())
-    print("")
+    print("\n")
     return
 
 def writeResults(msg, results):
