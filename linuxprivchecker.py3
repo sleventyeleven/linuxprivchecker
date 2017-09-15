@@ -54,7 +54,7 @@ def execCmd(cmdDict):
                 echo_stdout = check_output(cmd, shell=True)  
                 results = stdout.decode().split('\n')
         except Exception as e:
-            results = '[-] failed: {}'.format(e)
+            results = ['[-] failed: {}'.format(e)]
         cmdDict[item]["results"]=results
         
     return cmdDict
@@ -83,11 +83,9 @@ def writeResults(msg, results):
 # Basic system info
 print( "[*] GETTING BASIC SYSTEM INFO...\n")
 
-results=[]
-
-sysInfo = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System","results":results}, 
-       "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results}, 
-       "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results}
+sysInfo = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System"}, 
+       "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel"}, 
+       "HOSTNAME":{"cmd":"hostname", "msg":"Hostname"}
       }
 
 sysInfo = execCmd(sysInfo)
@@ -97,9 +95,12 @@ printResults(sysInfo)
 
 print( "[*] GETTING NETWORKING INFO...\n")
 
-netInfo = {"NETINFO":{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces", "results":results},
-       "ROUTE":{"cmd":"route", "msg":"Route", "results":results},
-       "NETSTAT":{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat", "results":results}
+netInfo = {"NETINFO":{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces"},
+       "ROUTE":{"cmd":"route", "msg":"Route"},
+       "NETSTAT":{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat"},
+       "IP_Adder":{"cmd":"ip addr", "msg":"ip addr"},
+       "IP_Route":{"cmd":"ip route", "msg":"ip route"},
+       "SS":{"cmd":"ss -antup", "msg":"ss"}
       }
 
 netInfo = execCmd(netInfo)
@@ -108,16 +109,16 @@ printResults(netInfo)
 # File System Info
 print( "[*] GETTING FILESYSTEM INFO...\n")
 
-driveInfo = {"MOUNT":{"cmd":"mount","msg":"Mount results", "results":results},
-         "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab entries", "results":results}
+driveInfo = {"MOUNT":{"cmd":"mount","msg":"Mount results"},
+         "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab entries"}
         }
 
 driveInfo = execCmd(driveInfo)
 printResults(driveInfo)
 
 # Scheduled Cron Jobs
-cronInfo = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Scheduled cron jobs", "results":results},
-        "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Writable cron dirs", "results":results}
+cronInfo = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Scheduled cron jobs"},
+        "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Writable cron dirs"}
        }
 
 cronInfo = execCmd(cronInfo)
@@ -126,14 +127,14 @@ printResults(cronInfo)
 # User Info
 print("\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n")
 
-userInfo = {"WHOAMI":{"cmd":"whoami", "msg":"Current User", "results":results},
-        "ID":{"cmd":"id","msg":"Current User ID", "results":results},
-        "ALLUSERS":{"cmd":"cat /etc/passwd", "msg":"All users", "results":results},
-        "SUPUSERS":{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super Users Found:", "results":results},
-        "HISTORY":{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root and current user history (depends on privs)", "results":results},
-        "ENV":{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Environment", "results":results},
-        "SUDOERS":{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)", "results":results},
-        "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Logged in User Activity", "results":results}
+userInfo = {"WHOAMI":{"cmd":"whoami", "msg":"Current User"},
+        "ID":{"cmd":"id","msg":"Current User ID"},
+        "ALLUSERS":{"cmd":"cat /etc/passwd", "msg":"All users"},
+        "SUPUSERS":{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super Users Found:"},
+        "HISTORY":{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root and current user history (depends on privs)"},
+        "ENV":{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Environment"},
+        "SUDOERS":{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)"},
+        "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Logged in User Activity"}
        }
 
 userInfo = execCmd(userInfo)
@@ -145,19 +146,19 @@ if "root" in userInfo["ID"]["results"][0]:
 # File/Directory Privs
 print("[*] ENUMERATING FILE AND DIRECTORY PERMISSIONS/CONTENTS...\n")
 
-fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories for User/Group 'Root'", "results":results},
-       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories for Users other than Root", "results":results},
-       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Files", "results":results},
-       "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Files and Directories", "results":results},
-       "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible", "results":results}
+fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories for User/Group 'Root'"},
+       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories for Users other than Root"},
+       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Files"},
+       "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Files and Directories"},
+       "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible"}
       }
 
 fdPerms = execCmd(fdPerms) 
 printResults(fdPerms)
 
-pwdFiles = {"LOGPWDS":{"cmd":"find /var/log -name '*.log' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Logs containing keyword 'password'", "results":results},
-        "CONFPWDS":{"cmd":"find /etc -name '*.c*' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Config files containing keyword 'password'", "results":results},
-        "SHADOW":{"cmd":"cat /etc/shadow 2>/dev/null", "msg":"Shadow File (Privileged)", "results":results}
+pwdFiles = {"LOGPWDS":{"cmd":"find /var/log -name '*.log' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Logs containing keyword 'password'"},
+        "CONFPWDS":{"cmd":"find /etc -name '*.c*' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Config files containing keyword 'password'"},
+        "SHADOW":{"cmd":"cat /etc/shadow 2>/dev/null", "msg":"Shadow File (Privileged)"}
        }
 
 pwdFiles = execCmd(pwdFiles)
@@ -171,15 +172,15 @@ if "debian" in sysInfo["KERNEL"]["results"][0] or "ubuntu" in sysInfo["KERNEL"][
 else:
     getPkgs = "rpm -qa | sort -u" # RH/other
 
-getAppProc = {"PROCS":{"cmd":"ps aux | awk '{print $1,$2,$9,$10,$11}'", "msg":"Current processes", "results":results},
-              "PKGS":{"cmd":getPkgs, "msg":"Installed Packages", "results":results}}
+getAppProc = {"PROCS":{"cmd":"ps aux | awk '{print $1,$2,$9,$10,$11}'", "msg":"Current processes"},
+              "PKGS":{"cmd":getPkgs, "msg":"Installed Packages"}}
 
 getAppProc = execCmd(getAppProc)
 printResults(getAppProc) # comment to reduce output
 
-otherApps = { "SUDO":{"cmd":"sudo -V | grep version 2>/dev/null", "msg":"Sudo Version (Check out http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=sudo)", "results":results},
-          "APACHE":{"cmd":"apache2 -v; apache2ctl -M; httpd -v; apachectl -l 2>/dev/null", "msg":"Apache Version and Modules", "results":results},
-          "APACHECONF":{"cmd":"cat /etc/apache2/apache2.conf 2>/dev/null", "msg":"Apache Config File", "results":results}}
+otherApps = { "SUDO":{"cmd":"sudo -V | grep version 2>/dev/null", "msg":"Sudo Version (Check out http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=sudo)"},
+          "APACHE":{"cmd":"apache2 -v; apache2ctl -M; httpd -v; apachectl -l 2>/dev/null", "msg":"Apache Version and Modules"},
+          "APACHECONF":{"cmd":"cat /etc/apache2/apache2.conf 2>/dev/null", "msg":"Apache Config File"}}
 
 otherApps = execCmd(otherApps)
 printResults(otherApps)
@@ -229,7 +230,7 @@ for key in procdict:
 # First discover the avaialable tools 
 print("\n[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING...\n")
 
-devTools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Installed Tools", "results":results}}
+devTools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Installed Tools"}}
 devTools = execCmd(devTools)
 printResults(devTools)
 
