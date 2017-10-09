@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 ###############################################################################################################
-## [Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script
+## [Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script for python 3
 ## [Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
 ## [Updater]: Mike Merrill (linted)
 ##-------------------------------------------------------------------------------------------------------------
@@ -11,16 +11,11 @@
 ## passwords and applicable exploits. 
 ##-------------------------------------------------------------------------------------------------------------
 ## [Warning]:
-## This script comes as-is with no promise of functionality or accuracy.  I have no plans to maintain updates, 
-## I did not write it to be efficient and in some cases you may find the functions may not produce the desired 
-## results.  For example, the function that links packages to running processes is based on keywords and will 
-## not always be accurate.  Also, the exploit list included in this function will need to be updated over time. 
-## Feel free to change or improve it any way you see fit.
+## This script comes as-is with no promise of functionality or accuracy.  
 ##-------------------------------------------------------------------------------------------------------------   
 ## [Modification, Distribution, and Attribution]:
 ## You are free to modify and/or distribute this script as you wish.  I only ask that you maintain original
-## author attribution and not attempt to sell it or incorporate it into any commercial offering (as if it's 
-## worth anything anyway :)
+## author attribution and not attempt to sell it or incorporate it into any commercial offering.
 ###############################################################################################################
 
 # conditional import for older versions of python not compatible with subprocess
@@ -34,13 +29,16 @@ except ImportError:
     compatmode = 1
 
 # title / formatting
-bigline = "================================================================================================="
-smlline = "-------------------------------------------------------------------------------------------------"
+bigline = "=" * 80
+smlline = "-" * 80
 
-print(bigline)
-print("LINUX PRIVILEGE ESCALATION CHECKER")
-print(bigline)
-print("")
+
+
+def header(message):
+    print(bigline)
+    print(message)
+    print(bigline)
+    print("")
 
 # loop through dictionary, execute the commands, store the results, return updated dict
 def execCmd(cmdDict):
@@ -79,6 +77,8 @@ def writeResults(msg, results):
             f.write("    " + result.strip())
     f.close()
     return
+
+header("LINUX PRIVILEGE ESCALATION CHECKER")
 
 # Basic system info
 print( "[*] GETTING BASIC SYSTEM INFO...\n")
