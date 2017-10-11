@@ -241,7 +241,7 @@ echo -e "[*] FINDING RELEVANT PRIVILEGE ESCALATION EXPLOITS..."
 # We're gonna do this section a little different
 echo -ne "\n\n\n"
 printf "%*s\n" "80" | tr " " "*"
-echo -ne "This project is still under development.\nToo get involved or check for updates please check \nhttps://github.com/linted/linuxprivchecker\n"
+echo -ne "This project is still under development.\nTo get involved or check for updates please check \nhttps://github.com/linted/linuxprivchecker\n"
 printf "%*s\n" "80" | tr " " "*"
 
 echo -ne "\n\n${TITLE_LINE}"
