@@ -10,7 +10,7 @@ exploits.
 
 ## [Original Author]: 
 Mike Czumak (T_v3rn1x) -- @SecuritySift
-# [Contributors]:
+## [Contributors]:
 Mike Merrill (linted) -- https://github.com/linted
 James Hogan (5aru) -- https://github.com/5aru
 
