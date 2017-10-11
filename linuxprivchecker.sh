@@ -188,15 +188,15 @@ formatCommand "cat /etc/apache2/apache2.conf 2>/dev/null"
 echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] IDENTIFYING PROCESSES AND PACKAGES RUNNING AS ROOT OR OTHER SUPERUSER...\n"
 
-ps -u 0 | awk '{print $NF}' | while IFS= read -r line; do
-	if [ $PKGMNGR -eq 1 ]; then
-    	formatCommand "dpkg -l | grep $line"
-	elif [ $PKGMNGR -eq 2 ]; then
-		formatCommand "dnf -qa | grep $line"
-	elif [ $PKGMNGR -eq 3 ]; then
-		formatCommand "rmp -qa | grep $line"
-	fi
-done
+EXTDGREP="($(ps -u 0 | tail -n+2 | rev | cut -d " " -f 1 | rev | cut -d "/" -f1 | sort | uniq | xargs | tr " " "|"))"
+
+if [ $PKGMNGR -eq 1 ]; then
+    	formatCommand "dpkg -l | grep -iE '${EXTDGREP}'"
+elif [ $PKGMNGR -eq 2 ]; then
+	formatCommand "dnf -qa | grep -iE '${EXTDGREP}'"
+elif [ $PKGMNGR -eq 3 ]; then
+	formatCommand "rpm -qa | grep -iE '${EXTDGREP}'"
+fi
 
 echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING..."
@@ -239,7 +239,11 @@ echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] FINDING RELEVANT PRIVILEGE ESCALATION EXPLOITS..."
 
 # We're gonna do this section a little different
+echo -ne "\n\n\n"
+printf "%*s\n" "80" | tr " " "*"
+echo -ne "This project is still under development.\nToo get involved or check for updates please check \nhttps://github.com/linted/linuxprivchecker\n"
+printf "%*s\n" "80" | tr " " "*"
 
-
-echo "Finished"
-echo "${TITLE_LINE}"
+echo -ne "\n\n${TITLE_LINE}"
+echo -ne "\nFINISHED"
+echo -ne "\n${TITLE_LINE}\n"
