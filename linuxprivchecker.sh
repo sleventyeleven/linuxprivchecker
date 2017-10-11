@@ -231,4 +231,4 @@ echo -e "[*] FINDING RELEVANT PRIVILEGE ESCALATION EXPLOITS..."
 
 
 echo "Finished"
-echo "${TITLE_LINE}
+echo "${TITLE_LINE}"
