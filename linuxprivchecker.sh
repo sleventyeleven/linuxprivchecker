@@ -163,10 +163,13 @@ echo -e "[*] ENUMERATING PROCESSES AND APPLICATIONS...\n"
 
 echo -e "[+] Installed Packages"
 if [ -x "$(command -v dpkg)" ]; then
+	PKGMNGR=1
 	formatCommand "dpkg -l | awk '{\$1=\$4=\"\"; print \$0}'"
 elif [ -x "$(command -v dnf)" ]; then
+	PKGMNGR=2
 	formatCommand "dnf -qa | sort -u"
 elif [ -x "$(command -v rpm)" ]; then
+	PKGMNGR=3
 	formatCommand "rpm -qa | sort -u"
 fi
 
@@ -185,7 +188,15 @@ formatCommand "cat /etc/apache2/apache2.conf 2>/dev/null"
 echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] IDENTIFYING PROCESSES AND PACKAGES RUNNING AS ROOT OR OTHER SUPERUSER...\n"
 
-# Need to figure out how I want to do this section
+ps -u 0 | awk '{print $NF}' | while IFS= read -r line; do
+	if [ $PKGMNGR -eq 1 ]; then
+    	formatCommand "dpkg -l | grep $line"
+	elif [ $PKGMNGR -eq 2 ]; then
+		formatCommand "dnf -qa | grep $line"
+	elif [ $PKGMNGR -eq 3 ]; then
+		formatCommand "rmp -qa | grep $line"
+	fi
+done
 
 echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING..."
