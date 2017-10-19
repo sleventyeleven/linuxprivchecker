@@ -17,7 +17,8 @@ class SearchHandler(socketserver.StreamRequestHandler):
             results = self.server.search(data)
             for exploits in results:
                 output.append(exploits[0]['description'] + ' id: ' + exploits[0]['id'])
-            self.wfile.write('\n'.join(output).encode() + b'\n')
+            if len(output) > 0:
+                self.wfile.write('\n'.join(output).encode() + b'\n')
             data = self.rfile.readline().decode().strip()
         print('[-] Closing connection from ' + self.client_address[0])
         
