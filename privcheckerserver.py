@@ -9,17 +9,17 @@ _IP_ = '0.0.0.0'
 
 class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
-        output = []
+        print('[+] Connection from '+ self.client_address[0])
         data = self.rfile.readline().decode().strip()
-        while not 'done' in data:
-            print(data)
+        while not data == '':
+            print('[ ] Searching for: ' + data)
+            output = [ ]
             results = self.server.search(data)
-            print(results)
             for exploits in results:
                 output.append(exploits[0]['description'] + ' id: ' + exploits[0]['id'])
+            self.wfile.write('\n'.join(output).encode() + b'\n')
             data = self.rfile.readline().decode().strip()
-        buff = '\n'.join(output).encode()
-        self.wfile.write(buff)
+        print('[-] Closing connection from ' + self.client_address[0])
         
 
 
@@ -36,7 +36,12 @@ class ExploitServer(exploitdb.ExploitSearch, socketserver.ThreadingMixIn, socket
 def main():
     exploit = ExploitServer((_IP_, _PORT_), SearchHandler)
     print('[ ] Starting server on port ' + str(_PORT_))
-    exploit.serve_forever()
+    try:
+        exploit.serve_forever()
+    except:
+        print('[-] Caught exception. Shutting down.')
+        exploit.shutdown()
+        exploit.server_close()
     
 if __name__ == "__main__":
     main()
