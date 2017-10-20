@@ -237,12 +237,18 @@ fi
 
 echo -ne "\n${SECTION_LINE}\n"
 echo -e "[*] FINDING RELEVANT PRIVILEGE ESCALATION EXPLOITS..."
+read -p "[?] Would you like to search for possible exploits? [y/N] " connectToServer
 
-# We're gonna do this section a little different
-echo -ne "\n\n\n"
-printf "%*s\n" "80" | tr " " "*"
-echo -ne "This project is still under development.\nTo get involved or check for updates please check \nhttps://github.com/linted/linuxprivchecker\n"
-printf "%*s\n" "80" | tr " " "*"
+if [[ $connectToServer = y* ]]
+then
+	read -p "[?] What is the address of the server? " server
+	read -p "[?] What port is the server using? " port
+	echo -ne "\n\n"
+	echo -e "[ ] Searching on $server:$port"
+	printf "%*s\n" "80" | tr " " "*"
+	dpkg -l | tail -n +6 | awk '{print $2, $3} END {print ""}' | nc $server $port
+	printf "%*s\n" "80" | tr " " "*"
+fi
 
 echo -ne "\n\n${TITLE_LINE}"
 echo -ne "\nFINISHED"
