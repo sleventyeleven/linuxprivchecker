@@ -5,7 +5,12 @@ try:
     from exploitdb import exploitdb
 except:
     import os
+    print("-"*80)
+    print('Submodule not found. Setting up...')
     os.system('cd exploitdb; git submodule init; git submodule update')
+    print("-"*80)
+    print("Please run again for full functionality.")
+    exit()
 import socketserver
 
 _PORT_ = 4521
