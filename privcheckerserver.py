@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 # server for hosting exploit search
 
-from exploitdb import exploitdb
+try:
+    from exploitdb import exploitdb
+except:
+    import os
+    print("-"*80)
+    print('Submodule not found. Setting up...')
+    os.system('cd exploitdb; git submodule init; git submodule update')
+    print("-"*80)
+    print("Please run again for full functionality.")
+    exit()
 import socketserver
 
 _PORT_ = 4521
@@ -18,6 +27,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
             for exploits in results:
                 output.append(exploits[0]['description'] + ' id: ' + exploits[0]['id'])
             if len(output) > 0:
+                print(''.join(output))
                 self.wfile.write('\n'.join(output).encode() + b'\n')
             data = self.rfile.readline().decode().strip()
         print('[-] Closing connection from ' + self.client_address[0])
