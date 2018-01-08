@@ -1,5 +1,5 @@
 #!/bin/bash
-test
+
 ###############################################################################################################
 ## [Title]: linuxprivchecker.sh -- a Linux Privilege Escalation Check Script
 ## [Original Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
@@ -94,12 +94,6 @@ operatingSYSTEM(){
 
   systemNAME="Hostname";
   cmdRESPONSE "hostname -f";
-
-  systemNAME="Environment Variables";
-  cmdRESPONSE "env | grep -v "LS_COLORS"";
-
-  systemNAME="Printer";
-  cmdRESPONSE "lpstat -a";
 }
 
 netWORK(){
@@ -107,22 +101,23 @@ netWORK(){
   systemAREAtitle;
 
   systemNAME="Network Interfaces";
-  cmdRESPONSE "if [ -x "$(command -v ifconfig)" ]; then ifconfig; else ip a; fi";
+  cmdRESPONSE "ifconfig || ip a";
 
   systemNAME="DNS Resolver";
+  cmdRESPONSE "cat /etc/resolv.conf";
 
   systemNAME="Route";
-  cmdRESPONSE "if [ -x "$(command -v route)" ]; then route -n; else ip route; fi";
+  cmdRESPONSE "route -n || ip route";
 }
 
-userACCOUNTS(){
-  systemAREA="Users";
+userENVIRONMENT(){
+  systemAREA="USERS & ENVIRONMENT";
   systemAREAtitle;
 
-  systemNAME="All Users";
-  cmdRESPONSE "cat /etc/passwd";
+  systemNAME="Current User";
+  cmdRESPONSE "whoami";
 
-  systemNAME="My ID & Group(s)";
+  systemNAME="Current User ID";
   cmdRESPONSE "id";
 
   systemNAME="Who's Logged Right Now";
@@ -130,6 +125,15 @@ userACCOUNTS(){
 
   systemNAME="Who's Logged Last";
   cmdRESPONSE "last";
+
+  systemNAME="All Users";
+  cmdRESPONSE "cat /etc/passwd";
+
+  systemNAME="All Groups";
+  cmdRESPONSE "cat /etc/group";
+
+  systemNAME="Shadow File";
+  cmdRESPONSE "cat /etc/shadow";
 
   systemNAME="Super Users";
   cmdRESPONSE "grep -v -E '^#' /etc/passwd | awk -F: '(/$3 == 0) { print /$1 }'";
@@ -143,15 +147,18 @@ userACCOUNTS(){
   systemNAME="Sudoers Files (Privileged) [/etc/sudoers.d/*]";
   cmdRESPONSE "cat /etc/sudoers.d/* | grep -v '#'";
 
-  systemNAME="Shadow File";
-  cmdRESPONSE "cat /etc/shadow";
-
   systemNAME="Root and Current User History (depends on privs)";
   cmdRESPONSE "ls -al ~/.*_history 2>/dev/null; ls -la /root/.*_history";
+
+  systemNAME="Environment Variables";
+  cmdRESPONSE "env | grep -v "LS_COLORS"";
+
+  systemNAME="Printer";
+  cmdRESPONSE "lpstat -a";
 }
 
-fileSYSTEMS(){
-  systemAREA="FILE SYSTEMS";
+filePERMISSIONS(){
+  systemAREA="FILE SYSTEMS & PERMISSIONS";
   systemAREAtitle;
 
   systemNAME="Mounts";
@@ -183,7 +190,6 @@ fileSYSTEMS(){
 
   systemNAME="Configuration Files Containing Keyword 'password'";
   cmdRESPONSE "find /var/log -name '*.log' | xargs -l10 egrep 'pwd|password' 2>/dev/null";
-
 }
 
 applicationSERVICES(){
@@ -241,39 +247,17 @@ searchEXPLOITS(){
   fi
 }
 
-cleanUP(){
-  systemAREA="Clean Up";
-  systemAREAtitle;
-
-  systemNAME="Clearing /var/log/auth.log";
-  cmdRESPONSE "echo " " > /var/log/auth.log";
-
-  systemNAME="Clearning bash_history";
-  cmdRESPONSE "echo " " > ~/.bash_history";
-
-  systemNAME="Clearing Current Session History";
-  cmdRESPONSE "history -c";
-
-  systemNAME="Setting history max lines to 0";
-  cmdRESPONSE "export HISTFILESIZE=0";
-
-  systemNAME="Setting history max cmds to 0";
-  cmdRESPONSE "export HISTSIZE=0";
-
-  echo ${titleLINE};
-  echo "FINISHED"
-  echo -e ${titleLINE}${RESET};
-}
-
 start(){
   scriptTITLE;
   operatingSYSTEM;
   netWORK;
-  userACCOUNTS;
-  fileSYSTEMS;
+  userENVIRONMENT;
+  filePERMISSIONS;
   applicationSERVICES;
   searchEXPLOITS;
-  cleanUP;
+  echo ${titleLINE};
+  echo "FINISHED"
+  echo -e ${titleLINE}${RESET};
   echo -e $RESET;
 }
 
