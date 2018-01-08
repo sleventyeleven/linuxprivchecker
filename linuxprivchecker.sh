@@ -1,5 +1,5 @@
 #!/bin/bash
-
+test
 ###############################################################################################################
 ## [Title]: linuxprivchecker.sh -- a Linux Privilege Escalation Check Script
 ## [Original Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
