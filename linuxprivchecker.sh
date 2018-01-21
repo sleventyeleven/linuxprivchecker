@@ -133,6 +133,9 @@ userENVIRONMENT(){
   systemNAME="Sudoers Files (Privileged) [/etc/sudoers.d/*]";
   cmdRESPONSE "cat /etc/sudoers.d/* | grep -v '#'";
 
+  systemNAME="User's specific NOPASSWD sudo entries";
+  cmdRESPONSE "sudo -ln";
+
   systemNAME="Root and Current User History (depends on privs)";
   cmdRESPONSE "ls -al ~/.*_history 2>/dev/null; ls -la /root/.*_history";
 
