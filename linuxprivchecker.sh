@@ -128,8 +128,8 @@ formatCommand "cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null"
 echo -e "\n[+] Sudoers Files (Privileged) [/etc/sudoers.d/*]"
 formatCommand "cat /etc/sudoers.d/* 2>/dev/null | grep -v '#' 2>/dev/null"
 
-echo -e "\n[+] User's specific sudo permissions"
-formatCommand "sudo -l"
+echo -e "\n[+] User's specific NOPASSWD sudo entries"
+formatCommand "sudo -ln"
 
 echo -e "\n[+] Logged in User Activity"
 formatCommand "w 2>/dev/null"
