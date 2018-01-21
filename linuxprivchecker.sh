@@ -36,40 +36,36 @@
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games"
 
 # line formatting
-titleLINE=$(printf "%*s\n" "80" | tr ' ' "=");
-sectionLINE=$(printf "%*s\n" "40" | tr ' ' "-");
+LINE=$(printf "%*s\n" "80" | tr ' ' "#");
 
 # title
 scriptTITLE(){
-echo ${titleLINE};
-echo "         LINUX PRIVILEGE ESCALATION CHECKER"
-echo "         https://github.com/linted/linuxprivchecker for more info..."
-echo ${titleLINE};
+echo ${LINE};
+echo "    LINUX PRIVILEGE ESCALATION CHECKER"
+echo "    https://github.com/linted/linuxprivchecker for more info..."
+echo ${LINE};
+echo
 }
 
 systemAREAtitle(){
-  echo ${sectionLINE};
-  echo -e "         $systemAREA";
-  echo ${sectionLINE};
+  echo ${LINE};
+  echo -e "    $systemAREA";
+  echo ${LINE};
   echo
-  sleep .5s;
 }
 
 cmdRESPONSE(){
 	# run and format cmd
-  cmdRESULT=$(eval $1 2>/dev/null | sed 's|^|           |'; echo "${PIPESTATUS[0]}");
+  cmdRESULT=$(eval $1 2>/dev/null | sed 's|^|     |'; echo "${PIPESTATUS[0]}");
 
 	# check cmd status
   if [ ${cmdRESULT:(-1)} -eq 0 ]; then
-    echo "[OK]     $systemNAME";
+    echo "[+] $systemNAME";
     echo "${cmdRESULT%?}";
-    echo
   else
-    echo "[FAILED] $systemNAME";
+    echo "[-] $systemNAME";
     echo "${cmdRESULT%?}";
-    echo
   fi
-  sleep .5s;
 }
 
 operatingSYSTEM(){
@@ -212,7 +208,30 @@ applicationSERVICES(){
   cmdRESPONSE "which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp";
 
   systemNAME="Related Shell Escape Sequences";
-  cmdRESPONSE "if [ -x "$(command -v vi)" ]; then echo -ne \"vi-->\t:!bash\n\"; echo -ne \"vi-->\t:set shell=/bin/bash:shell\n\"; fi; if [ -x "$(command -v vim)" ]; then echo -ne \"vim-->\t:!bash\n\" | sed 's|^|    |'; echo -ne \"vim-->\t:set shell=/bin/bash:shell\n\" | sed 's|^|    |'; fi; if [ -x "$(command -v awk)" ]; then echo -ne \"awk-->\tawk 'BEGIN {system(\"/bin/bash\")}'\n\" | sed 's|^|    |'; fi; if [ -x "$(command -v perl)" ]; then echo -ne \"perl-->\tperl -e 'exec \"/bin/bash\";'\n\" | sed 's|^|    |'; fi; if [ -x "$(command -v python)" ]; then echo -ne \"python-->\tpython -c '__import__(\"os\").system(\"/bin/bash\")'\n\" | sed 's|^|    |'; fi; if [ -x "$(command -v find)" ]; then echo -ne \"find->\tfind / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;\n\" | sed 's|^|    |'; fi; if [ -x "$(command -v nmap)" ]; then echo -ne \"nmap-->\t--interactive\n\" | sed 's|^|    |'; fi";
+  cmdRESPONSE "if [ -x "$(command -v vi)" ]; then \
+                  echo -ne \"vi-->\t:!bash\n\"; \
+                  echo -ne \"vi-->\t:set shell=/bin/bash:shell\n\"; \
+               fi; \
+               if [ -x "$(command -v vim)" ]; then \
+                  echo -ne \"vim-->\t:!bash\n\" | sed 's|^|    |'; \
+                  echo -ne \"vim-->\t:set shell=/bin/bash:shell\n\" | sed 's|^|    |'; \
+               fi; \
+               if [ -x "$(command -v awk)" ]; then \
+                  echo -ne \"awk-->\tawk 'BEGIN {system(\"/bin/bash\")}'\n\" | sed 's|^|    |'; \
+               fi; \
+               if [ -x "$(command -v perl)" ]; then \
+                  echo -ne \"perl-->\tperl -e 'exec \"/bin/bash\";'\n\" | sed 's|^|    |'; \
+               fi; \
+               if [ -x "$(command -v python)" ]; then \
+                  echo -ne \"python-->\tpython -c '__import__(\"os\").system(\"/bin/bash\")'\n\" | sed 's|^|    |'; \
+               fi; \
+               if [ -x "$(command -v find)" ]; then \
+                  echo -ne \"find->\tfind / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;\n\" | sed 's|^|    |'; \
+               fi; \
+               if [ -x "$(command -v nmap)" ]; then \
+                  echo -ne \"nmap-->\t--interactive\n\" | sed 's|^|    |'; \
+               fi";
+
 }
 
 searchEXPLOITS(){
@@ -242,10 +261,10 @@ start(){
   filePERMISSIONS;
   applicationSERVICES;
   searchEXPLOITS;
-  echo ${titleLINE};
-  echo "         FINISHED"
-  echo -e ${titleLINE};
-  echo -e $RESET;
+  echo ${LINE};
+  echo "    FINISHED"
+  echo ${LINE};
+  echo
 }
 
 start;
