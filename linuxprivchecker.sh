@@ -33,7 +33,7 @@
 ###############################################################################################################
 
 # command paths
-PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games"
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games";
 
 # line formatting
 LINE=$(printf "%*s\n" "80" | tr ' ' "#");
