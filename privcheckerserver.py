@@ -2,49 +2,57 @@
 # server for hosting exploit search
 
 try:
-    from exploitdb import exploitdb
-except:
-    import os
-    print("-"*80)
-    print('Submodule not found. Setting up...')
-    os.system('cd exploitdb; git submodule init; git submodule update')
-    print("-"*80)
-    print("Please run again for full functionality.")
-    exit()
-import socketserver
+    import socketserver
+    from shutil import which
+    import argparse
+    import re
+    import subprocess
+except Exception as e:
+    print("Caught exception: {}\nAre you running with python3?".format(e))
+    exit(1)
+
 
 _PORT_ = 4521
 _IP_ = '0.0.0.0'
+_searchsploit = ""
 
 class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
         print('[+] Connection from '+ self.client_address[0])
-        data = self.rfile.readline().decode().strip()
-        while not data == '':
-            print('[ ] Searching for: ' + data)
-            output = [ ]
-            results = self.server.search(data)
-            for exploits in results:
-                output.append(exploits[0]['description'] + ' id: ' + exploits[0]['id'])
-            if len(output) > 0:
-                print(''.join(output))
-                self.wfile.write('\n'.join(output).encode() + b'\n')
-            data = self.rfile.readline().decode().strip()
+        output = []
+        for data in iter(self.rfile.readline, ''):
+            term = data.decode().strip()
+            if not re.search("^[\w\s]+$", term):
+                continue
+
+            print('[ ] Searching for: ' + term)
+            proc = subprocess.Popen([_searchsploit, term.split(" ")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
         print('[-] Closing connection from ' + self.client_address[0])
         
 
 
-class ExploitServer(exploitdb.ExploitSearch, socketserver.ThreadingMixIn, socketserver.TCPServer):
-    def __init__(self, connectionInfo, handler):
-        exploitdb.ExploitSearch.__init__(self)
-        socketserver.TCPServer.__init__(self, connectionInfo, handler)
-        socketserver.ThreadingMixIn.__init__(self)
+class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+   pass
     
 
-        
-
-
 def main():
+    #parse the args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ip", help="Ip to listen on")
+    parser.add_argument("-p", "--port", help="Port to listen on")
+    args = parser.parse_args()
+    if args.ip:
+        _IP_ = args.ip
+    if args.port:
+        _PORT_ = args.port
+
+    #make sure we have searchsploit accessable
+    _searchsploit = which("searchsploit")
+    if not _searchsploit:
+        print("Please install searchsploit.\nFor more details visit: https://github.com/offensive-security/exploit-database")
+        exit(2)
+
     exploit = ExploitServer((_IP_, _PORT_), SearchHandler)
     print('[ ] Starting server on port ' + str(_PORT_))
     try:
