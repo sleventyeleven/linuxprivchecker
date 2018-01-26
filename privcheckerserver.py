@@ -8,6 +8,7 @@ try:
     import re
     import subprocess
     import json
+    import multiprocessing
 except Exception as e:
     print("Caught exception: {}\nAre you running with python3?".format(e))
     exit(1)
@@ -21,26 +22,34 @@ class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
         try:
             print('[+] Connection from '+ self.client_address[0])
-            output = []
-            for data in iter(self.rfile.readline, ''):
-                term = data.decode().strip().split(" ")
-                term[-1] = term[-1][:3] #cut down on the last item which should be the version number
-                for splitTerms in term:
-                    if not re.search("^[\w\s:\-\+\.~_]+$", splitTerms):
-                        print("[-] recieved search term with invalid characters: {}".format(splitTerms))
-                        break #bad term break so we don't search it
+            p = multiprocessing.Pool(5)
+            for output in p.imap_unordered(self.search, iter(self.rfile.readline, b'\n')):
+                if not output[0]:
+                    #error'd out. print the results, but don't send them on?
+                    print(output[1])
+                    continue
+                if json.loads(output[1]).get("results", False):
+                    print('[+] Found results for: {}'.format(' '.join(term)))
+                    self.wfile.write(output.encode())
                 else:
-                    print('[ ] Searching for: {}'.format(' '.join(term)))
-                    proc = subprocess.Popen([_searchsploit, '-j', *term], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    output = proc.stdout.read()
-                    if json.loads(output).get("results", False):
-                        self.wfile.write(output.encode())
+                    print('[-] No results for: {}'.format(' '.join(term)))
 
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
+
+    def search(data):
+        try:
+            term = data.decode().strip().split(" ")
+            term[-1] = term[-1][:3] #cut down on the last item which should be the version number
+            for splitTerms in term:
+                if not re.search("^[\w:\-\+\.~_]+$", splitTerms):
+                    return [False, "[-] recieved search term with invalid characters: {}".format(data.decode().strip())] #bad term return so we don't search it
+            else:
+                proc = subprocess.Popen([_searchsploit, '-j', *term], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                output = proc.stdout.read()
+            return [True, output]
+ 
         except Exception as e:
-            print("[-] Caught exception {}. Closing this connection.".format(e))
-            self.wfile.write("[-] Server caught {}. Closing Connection\n".format(e).encode())
-        
+            return [False, "[-] ".format(e)]
 
 
 class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
