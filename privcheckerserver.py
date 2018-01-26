@@ -22,17 +22,18 @@ class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
         try:
             print('[+] Connection from '+ self.client_address[0])
-            self.pool = multiprocessing.Pool(5)
-            for output in self.pool.imap_unordered(self.search, iter(str(self.rfile.readline), '\n')):
+            self.pool = multiprocessing.Pool(10)
+            for output in self.pool.imap(SearchHandler.search, iter(self.rfile.readline, b'\n'), 5):
                 if not output[0]:
                     #error'd out. print the results, but don't send them on?
                     print(output[1])
                     continue
-                if json.loads(output[1]).get("results", False):
-                    print('[+] Found results for: {}'.format(' '.join(term)))
+                jsonOutput = json.loads(output[1])
+                if jsonOutput.get("results", False):
+                    print('[+] Found results for: {}'.format(jsonOutput.get("SEARCH", output)))
                     self.wfile.write(output.encode())
                 else:
-                    print('[-] No results for: {}'.format(' '.join(term)))
+                    print('[-] No results for: {}'.format(jsonOutput.get("SEARCH", output)))
 
             self.pool.close()
             self.pool.join()
@@ -43,7 +44,8 @@ class SearchHandler(socketserver.StreamRequestHandler):
             print("[-] Exception Caught: {}".format(e))
             self.pool.join()
 
-    def search(data):
+    @classmethod
+    def search(cls, data):
         try:
             term = data.decode().strip().split(" ")
             term[-1] = term[-1][:3] #cut down on the last item which should be the version number
@@ -54,9 +56,10 @@ class SearchHandler(socketserver.StreamRequestHandler):
                 proc = subprocess.Popen([_searchsploit, '-j', *term], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 output = proc.stdout.read()
             return [True, output]
- 
+
         except Exception as e:
             return [False, "[-] ".format(e)]
+
 
 
 class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
