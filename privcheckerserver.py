@@ -23,19 +23,17 @@ class SearchHandler(socketserver.StreamRequestHandler):
             output = []
             for data in iter(self.rfile.readline, ''):
                 term = data.decode().strip()
-                if re.search("^[\w\s:\-\+\._]+$", term):
+                if not re.search("^[\w\s:\-\+\.~_]+$", term):
                     print("[-] recieved search term with invalid characters: {}".format(term))
                     continue
 
                 print('[ ] Searching for: ' + term)
-                splitTerms = term.split(" ")
-                splitTerms[-1] = splitTerms[-1][:3] #cut down on the last item which should be the version number
                 proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 self.wfile.write('{}\n'.format(proc.stdout.read()).encode())
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
         except Exception as e:
             print("[-] Caught exception {}. Closing this connection.".format(e))
-            self.wfile.write("[-] Server caught {}. Closing Connection".format(e).encode())
+            self.wfile.write("[-] Server caught {}. Closing Connection\n".format(e).encode())
         
 
 
