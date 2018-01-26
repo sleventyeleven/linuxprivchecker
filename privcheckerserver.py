@@ -31,7 +31,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
                         break #bad term break so we don't search it
                 else:
                     print('[ ] Searching for: {}'.format(' '.join(term)))
-                    proc = subprocess.Popen([_searchsploit, '-j', *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    proc = subprocess.Popen([_searchsploit, '-j', *term], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     output = proc.stdout.read()
                     if json.loads(output).get("results", False):
                         self.wfile.write(output.encode())
