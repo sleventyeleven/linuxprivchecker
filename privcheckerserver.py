@@ -27,7 +27,9 @@ class SearchHandler(socketserver.StreamRequestHandler):
                 continue
 
             print('[ ] Searching for: ' + term)
-            proc = subprocess.Popen([_searchsploit, *term.split(" ")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            splitTerms = term.split(" ")
+            splitTerms[-1] = splitTerms[-1][:3] #cut down on the last item which should be the version number
+            proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
         print('[-] Closing connection from ' + self.client_address[0])
         
