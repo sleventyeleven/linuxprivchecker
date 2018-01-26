@@ -35,6 +35,9 @@ class SearchHandler(socketserver.StreamRequestHandler):
                     print('[-] No results for: {}'.format(' '.join(term)))
 
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
+        except Exception as e:
+            self.wfile.write(b'{{"SEARCH":"ERROR", "RESULTS":"{}"}}'.format(e))
+            print("[-] Exception Caught: {}".format(e))
 
     def search(data):
         try:
