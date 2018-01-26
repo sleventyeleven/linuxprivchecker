@@ -22,12 +22,12 @@ class SearchHandler(socketserver.StreamRequestHandler):
         output = []
         for data in iter(self.rfile.readline, ''):
             term = data.decode().strip()
-            if re.search("^[\w\s\-\+\._]+$", term):
+            if re.search("^[\w\s:\-\+\._]+$", term):
                 print("[-] recieved search term with invalid characters: {}".format(term))
                 continue
 
             print('[ ] Searching for: ' + term)
-            proc = subprocess.Popen([_searchsploit, term.split(" ")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            proc = subprocess.Popen([_searchsploit, *term.split(" ")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
         print('[-] Closing connection from ' + self.client_address[0])
         
