@@ -29,7 +29,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
                         print("[-] recieved search term with invalid characters: {}".format(splitTerms))
                         break #bad term break so we don't search it
                 else:
-                    print('[ ] Searching for: {}'.format(' '.join(term)
+                    print('[ ] Searching for: {}'.format(' '.join(term))
                     proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     self.wfile.write('{}\n'.format(proc.stdout.read()).encode())
 
