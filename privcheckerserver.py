@@ -31,11 +31,11 @@ class SearchHandler(socketserver.StreamRequestHandler):
                 splitTerms = term.split(" ")
                 splitTerms[-1] = splitTerms[-1][:3] #cut down on the last item which should be the version number
                 proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
+                self.wfile.write('{}\n'.format(proc.stdout.read())
             print('[-] Closing connection from ' + self.client_address[0])
         except Exception as e:
             print("[-] Caught exception {}. Closing this connection.".format(e))
-            self.wfile.write("[-] Server caught {}. Closing Connection".format(e).decode())
+            self.wfile.write("[-] Server caught {}. Closing Connection".format(e))
         
 
 
