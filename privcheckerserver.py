@@ -7,6 +7,7 @@ try:
     import argparse
     import re
     import subprocess
+    import json
 except Exception as e:
     print("Caught exception: {}\nAre you running with python3?".format(e))
     exit(1)
@@ -30,8 +31,10 @@ class SearchHandler(socketserver.StreamRequestHandler):
                         break #bad term break so we don't search it
                 else:
                     print('[ ] Searching for: {}'.format(' '.join(term)))
-                    proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    self.wfile.write('{}\n'.format(proc.stdout.read()).encode())
+                    proc = subprocess.Popen([_searchsploit, '-j', *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    output = proc.stdout.read()
+                    if json.loads(output).get("results", False):
+                        self.wfile.write(output.encode())
 
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
         except Exception as e:
