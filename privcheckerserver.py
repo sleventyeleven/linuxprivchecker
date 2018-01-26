@@ -22,7 +22,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
         try:
             print('[+] Connection from '+ self.client_address[0])
-            p = multiprocessing.Pool(5)
+            self.pool = multiprocessing.Pool(5)
             for output in p.imap_unordered(self.search, iter(str(self.rfile.readline), '\n')):
                 if not output[0]:
                     #error'd out. print the results, but don't send them on?
@@ -34,10 +34,14 @@ class SearchHandler(socketserver.StreamRequestHandler):
                 else:
                     print('[-] No results for: {}'.format(' '.join(term)))
 
+            self.pool.close()
+            self.pool.join()
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
         except Exception as e:
-            self.wfile.write('{{"SEARCH":"ERROR", "RESULTS":"{}"}}'.format(e).decode())
+            self.pool.terminate()
+            self.wfile.write('{{"SEARCH":"ERROR", "RESULTS":"{}"}}'.format(e).encode())
             print("[-] Exception Caught: {}".format(e))
+            self.pool.join()
 
     def search(data):
         try:
