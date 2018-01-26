@@ -22,14 +22,17 @@ class SearchHandler(socketserver.StreamRequestHandler):
             print('[+] Connection from '+ self.client_address[0])
             output = []
             for data in iter(self.rfile.readline, ''):
-                term = data.decode().strip()
-                if not re.search("^[\w\s:\-\+\.~_]+$", term):
-                    print("[-] recieved search term with invalid characters: {}".format(term))
-                    continue
+                term = data.decode().strip().split(" ")
+                term[-1] = term[-1][:3] #cut down on the last item which should be the version number
+                for splitTerms in term:
+                    if not re.search("^[\w\s:\-\+\.~_]+$", term):
+                        print("[-] recieved search term with invalid characters: {}".format(term))
+                        break #bad term break so we don't search it
+                else:
+                    print('[ ] Searching for: ' + term)
+                    proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    self.wfile.write('{}\n'.format(proc.stdout.read()).encode())
 
-                print('[ ] Searching for: ' + term)
-                proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                self.wfile.write('{}\n'.format(proc.stdout.read()).encode())
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
         except Exception as e:
             print("[-] Caught exception {}. Closing this connection.".format(e))
@@ -42,12 +45,6 @@ class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     
 
 def main():
-    #make sure we have searchsploit accessable
-    _searchsploit = which("searchsploit")
-    if not _searchsploit:
-        print("Please install searchsploit.\nFor more details visit: https://github.com/offensive-security/exploit-database")
-        exit(2)
-
     exploit = ExploitServer((_IP_, _PORT_), SearchHandler)
     print('[ ] Starting server on port ' + str(_PORT_))
     try:
@@ -67,6 +64,12 @@ if __name__ == "__main__":
         _IP_ = args.ip
     if args.port:
         _PORT_ = args.port
+
+    #make sure we have searchsploit accessable
+    _searchsploit = which("searchsploit")
+    if not _searchsploit:
+        print("Please install searchsploit.\nFor more details visit: https://github.com/offensive-security/exploit-database")
+        exit(2)
 
     print("[ ] Starting up")
     main()
