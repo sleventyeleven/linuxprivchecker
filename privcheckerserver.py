@@ -25,8 +25,8 @@ class SearchHandler(socketserver.StreamRequestHandler):
                 term = data.decode().strip().split(" ")
                 term[-1] = term[-1][:3] #cut down on the last item which should be the version number
                 for splitTerms in term:
-                    if not re.search("^[\w\s:\-\+\.~_]+$", term):
-                        print("[-] recieved search term with invalid characters: {}".format(term))
+                    if not re.search("^[\w\s:\-\+\.~_]+$", splitTerms):
+                        print("[-] recieved search term with invalid characters: {}".format(splitTerms))
                         break #bad term break so we don't search it
                 else:
                     print('[ ] Searching for: ' + term)
