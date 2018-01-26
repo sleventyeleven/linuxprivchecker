@@ -23,7 +23,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
         try:
             print('[+] Connection from '+ self.client_address[0])
             self.pool = multiprocessing.Pool(5)
-            for output in p.imap_unordered(self.search, iter(str(self.rfile.readline), '\n')):
+            for output in self.pool.imap_unordered(self.search, iter(str(self.rfile.readline), '\n')):
                 if not output[0]:
                     #error'd out. print the results, but don't send them on?
                     print(output[1])
