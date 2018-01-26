@@ -37,6 +37,8 @@ class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     
 
 def main():
+    global _IP_
+    global _PORT_
     #parse the args
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--ip", help="Ip to listen on")
@@ -63,4 +65,5 @@ def main():
         exploit.server_close()
     
 if __name__ == "__main__":
+    print("[ ] Starting up")
     main()
