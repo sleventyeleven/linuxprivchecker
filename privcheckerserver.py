@@ -18,20 +18,24 @@ _searchsploit = ""
 
 class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
-        print('[+] Connection from '+ self.client_address[0])
-        output = []
-        for data in iter(self.rfile.readline, ''):
-            term = data.decode().strip()
-            if re.search("^[\w\s:\-\+\._]+$", term):
-                print("[-] recieved search term with invalid characters: {}".format(term))
-                continue
+        try:
+            print('[+] Connection from '+ self.client_address[0])
+            output = []
+            for data in iter(self.rfile.readline, ''):
+                term = data.decode().strip()
+                if re.search("^[\w\s:\-\+\._]+$", term):
+                    print("[-] recieved search term with invalid characters: {}".format(term))
+                    continue
 
-            print('[ ] Searching for: ' + term)
-            splitTerms = term.split(" ")
-            splitTerms[-1] = splitTerms[-1][:3] #cut down on the last item which should be the version number
-            proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
-        print('[-] Closing connection from ' + self.client_address[0])
+                print('[ ] Searching for: ' + term)
+                splitTerms = term.split(" ")
+                splitTerms[-1] = splitTerms[-1][:3] #cut down on the last item which should be the version number
+                proc = subprocess.Popen([_searchsploit, *splitTerms], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                self.wfile.write(b'{}\n'.format(proc.stdout.read().decode()))
+            print('[-] Closing connection from ' + self.client_address[0])
+        except Exception as e:
+            print("[-] Caught exception {}. Closing this connection.".format(e))
+            self.wfile.write("[-] Server caught {}. Closing Connection".format(e).decode())
         
 
 
