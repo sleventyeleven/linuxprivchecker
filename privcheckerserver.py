@@ -22,7 +22,8 @@ class SearchHandler(socketserver.StreamRequestHandler):
         output = []
         for data in iter(self.rfile.readline, ''):
             term = data.decode().strip()
-            if not re.search("^[\w\s]+$", term):
+            if re.search("^[\w\s\-\+\._]+$", term):
+                print("[-] recieved search term with invalid characters: {}".format(term))
                 continue
 
             print('[ ] Searching for: ' + term)
@@ -37,18 +38,6 @@ class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     
 
 def main():
-    global _IP_
-    global _PORT_
-    #parse the args
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", help="Ip to listen on")
-    parser.add_argument("-p", "--port", help="Port to listen on")
-    args = parser.parse_args()
-    if args.ip:
-        _IP_ = args.ip
-    if args.port:
-        _PORT_ = args.port
-
     #make sure we have searchsploit accessable
     _searchsploit = which("searchsploit")
     if not _searchsploit:
@@ -65,5 +54,15 @@ def main():
         exploit.server_close()
     
 if __name__ == "__main__":
+    #parse the args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ip", help="Ip to listen on")
+    parser.add_argument("-p", "--port", help="Port to listen on")
+    args = parser.parse_args()
+    if args.ip:
+        _IP_ = args.ip
+    if args.port:
+        _PORT_ = args.port
+
     print("[ ] Starting up")
     main()
