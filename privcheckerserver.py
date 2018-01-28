@@ -26,10 +26,9 @@ class SearchHandler(socketserver.StreamRequestHandler):
                     print(output)
                     self.wfile.write(output.encode())
                 
-
             self.pool.close()
-            self.pool.join()
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
+            self.pool.join()
         except Exception as e:
             self.pool.terminate()
             self.wfile.write('{{"SEARCH":"ERROR", "RESULTS":"{}"}}'.format(e).encode())
@@ -66,8 +65,8 @@ def main():
 if __name__ == "__main__":
     #parse the args
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", help="Ip to listen on", required=True)
-    parser.add_argument("-p", "--port", help="Port to listen on", required=True)
+    parser.add_argument("-i", "--ip", help="Ip to listen on")
+    parser.add_argument("-p", "--port", help="Port to listen on")
     parser.add_argument("-f", "--file", help="The exploit csv to use")
     args = parser.parse_args()
     if args.ip:
