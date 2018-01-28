@@ -44,7 +44,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
             if all([term in rows["description"] for term in query]):
                 output.append('\t'.join((rows["description"], rows["file"])))
         if output:
-            return "\n".join(("[ ] " + query, *output)
+            return "\n".join(("[ ] " + query, *output))
 
 
 
