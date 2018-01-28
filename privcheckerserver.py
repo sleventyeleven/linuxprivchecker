@@ -24,7 +24,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
             for output in self.pool.imap(SearchHandler.search, iter(self.rfile.readline, b'\n')):
                 if output:
                     print(output)
-                    self.wfile.write(output.encode())
+                    self.wfile.write(output.encode() + b'\n')
                 
             self.pool.close()
             print('[$] Closing connection from {}\n'.format(self.client_address[0]))
@@ -39,12 +39,12 @@ class SearchHandler(socketserver.StreamRequestHandler):
     def search(cls, data):
         query = data.decode().strip().split(" ")
         query[-1] = query[-1][:3] #cut down on the last item which should be the version number
-        output = ["[ ]" + data]
+        output = []
         for rows in ExploitServer.exploitDatabase:
             if all([term in rows["description"] for term in query]):
-                output.append('\t | '.join(rows["description"], rows["file"]))
+                output.append('\t'.join((rows["description"], rows["file"]))
         if output:
-            return "\n".join(output)
+            return "\n".join(("[ ] " + query, *output)
 
 
 
