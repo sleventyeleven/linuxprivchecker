@@ -3,12 +3,10 @@
 
 try:
     import socketserver
-    from shutil import which
+    from os.path import isfile
     import argparse
-    import re
-    import subprocess
-    import json
     import multiprocessing
+    from csv import DictReader
 except Exception as e:
     print("Caught exception: {}\nAre you running with python3?".format(e))
     exit(1)
@@ -16,24 +14,18 @@ except Exception as e:
 
 _PORT_ = 4521
 _IP_ = '0.0.0.0'
-_searchsploit = ""
+_SEARCHSPLOIT_ = "/usr/share/exploitdb/files_exploits.csv"
 
 class SearchHandler(socketserver.StreamRequestHandler):
     def handle(self):
         try:
             print('[+] Connection from '+ self.client_address[0])
             self.pool = multiprocessing.Pool(10)
-            for output in self.pool.imap(SearchHandler.search, iter(self.rfile.readline, b'\n'), 5):
-                if not output[0]:
-                    #error'd out. print the results, but don't send them on?
-                    print(output[1])
-                    continue
-                jsonOutput = json.loads(output[1])
-                if jsonOutput.get("results", False):
-                    print('[+] Found results for: {}'.format(jsonOutput.get("SEARCH", output)))
+            for output in self.pool.imap(SearchHandler.search, iter(self.rfile.readline, b'\n')):
+                if output:
+                    print(output)
                     self.wfile.write(output.encode())
-                else:
-                    print('[-] No results for: {}'.format(jsonOutput.get("SEARCH", output)))
+                
 
             self.pool.close()
             self.pool.join()
@@ -46,24 +38,19 @@ class SearchHandler(socketserver.StreamRequestHandler):
 
     @classmethod
     def search(cls, data):
-        try:
-            term = data.decode().strip().split(" ")
-            term[-1] = term[-1][:3] #cut down on the last item which should be the version number
-            for splitTerms in term:
-                if not re.search("^[\w:\-\+\.~_]+$", splitTerms):
-                    return [False, "[-] recieved search term with invalid characters: {}".format(data.decode().strip())] #bad term return so we don't search it
-            else:
-                proc = subprocess.Popen([_searchsploit, '-j', *term], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                output = proc.stdout.read()
-            return [True, output]
-
-        except Exception as e:
-            return [False, "[-] ".format(e)]
+        query = data.decode().strip().split(" ")
+        query[-1] = query[-1][:3] #cut down on the last item which should be the version number
+        output = ["[ ]" + data]
+        for rows in ExploitServer.exploitDatabase:
+            if all([term in rows["description"] for term in query]):
+                output.append('\t | '.join(rows["description"], rows["file"]))
+        if output:
+            return "\n".join(output)
 
 
 
 class ExploitServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-   pass
+   exploitDatabase = []
     
 
 def main():
@@ -79,19 +66,31 @@ def main():
 if __name__ == "__main__":
     #parse the args
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", help="Ip to listen on")
-    parser.add_argument("-p", "--port", help="Port to listen on")
+    parser.add_argument("-i", "--ip", help="Ip to listen on", required=True)
+    parser.add_argument("-p", "--port", help="Port to listen on", required=True)
+    parser.add_argument("-f", "--file", help="The exploit csv to use")
     args = parser.parse_args()
     if args.ip:
         _IP_ = args.ip
     if args.port:
         _PORT_ = args.port
+    if args.file:
+        _SEARCHSPLOIT_ = args.file
 
-    #make sure we have searchsploit accessable
-    _searchsploit = which("searchsploit")
-    if not _searchsploit:
-        print("Please install searchsploit.\nFor more details visit: https://github.com/offensive-security/exploit-database")
+    if not isfile(_SEARCHSPLOIT_):
+        print("[-] Cannot find csv databse: {}\nFor more details visit: https://github.com/offensive-security/exploit-database".format(_SEARCHSPLOIT_))
         exit(2)
+
+       #parse the exploit database and collect all the results
+    try:
+        with open(_SEARCHSPLOIT_) as Fin:
+            reader = DictReader(Fin)
+            for lines in reader:
+                #add the database to the exploit server for non global persistance... or maybe it is technically still global?
+                ExploitServer.exploitDatabase.append(lines)
+    except Exception as e:
+        print("[-] Exception caught while attempting to parse database file. {}".format(e))
+        exit(3)
 
     print("[ ] Starting up")
     main()
