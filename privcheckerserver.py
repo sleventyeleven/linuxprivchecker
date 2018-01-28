@@ -31,7 +31,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
             self.pool.join()
         except Exception as e:
             self.pool.terminate()
-            self.wfile.write('{{"SEARCH":"ERROR", "RESULTS":"{}"}}'.format(e).encode())
+            self.wfile.write('[-] Exception Caught: {}'.format(e).encode())
             print("[-] Exception Caught: {}".format(e))
             self.pool.join()
 
@@ -44,7 +44,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
             if all([term in rows["description"] for term in query]):
                 output.append('\t'.join((rows["description"], rows["file"])))
         if output:
-            return "\n".join(("[ ] " + query, *output))
+            return "[ ] " + "\n".join([' '.join(query), *output])
 
 
 
