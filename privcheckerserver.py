@@ -42,7 +42,7 @@ class SearchHandler(socketserver.StreamRequestHandler):
         output = []
         for rows in ExploitServer.exploitDatabase:
             if all([term in rows["description"] for term in query]):
-                output.append('\t'.join((rows["description"], rows["file"]))
+                output.append('\t'.join((rows["description"], rows["file"])))
         if output:
             return "\n".join(("[ ] " + query, *output)
 
