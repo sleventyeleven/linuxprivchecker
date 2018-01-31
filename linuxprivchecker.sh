@@ -1,12 +1,13 @@
 #!/bin/bash
 ###############################################################################################################
 ## [Title]: linuxprivchecker.sh -- a Linux Privilege Escalation Check Script
-## [Original Author]: Mike Czumak (T_v3rn1x) -- https://twitter.com/SecuritySift
-## Forked from linuxprivchecker.py -- https://github.com/sleventyeleven/linuxprivchecker
+## [Author]: James Hogan (5aru) -- https://github.com/5aru
+##
 ## [Contributors]:
 ## Mike Merrill (linted) -- https://github.com/linted
-## James Hogan (5aru) -- https://github.com/5aru
 ## Ali Kaba (alibkaba) -- https://github.com/alibkaba
+##
+## [Original Author]: Mike Czumak (T_v3rn1x). Thanks for the work he did on the original linux priv checker
 ##-------------------------------------------------------------------------------------------------------------
 ## [Details]:
 ## This script is intended to be executed locally on a Linux box to enumerate basic system info and
