@@ -146,9 +146,9 @@ if "root" in userInfo["ID"]["results"][0]:
 # File/Directory Privs
 print("[*] ENUMERATING FILE AND DIRECTORY PERMISSIONS/CONTENTS...\n")
 
-fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories for User/Group 'Root'"},
-       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories for Users other than Root"},
-       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Files"},
+fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories for User/Group 'Root'"},
+       "WWDIRS":{"cmd":"find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories for Users other than Root"},
+       "WWFILES":{"cmd":"find / \( -wholename '/proc/*' -prune \) -o \( -type f -perm -o+w \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Files"},
        "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Files and Directories"},
        "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible"}
       }
