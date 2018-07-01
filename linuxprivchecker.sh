@@ -167,13 +167,13 @@ filePERMISSIONS(){
   cmdRESPONSE "ls -lt /root/";
 
   systemNAME="World Writeables Directories for User/Group 'root'";
-  cmdRESPONSE "find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -o+w \) -exec ls -ld '{}' ';' | grep root";
+  cmdRESPONSE "find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' | grep root";
 
   systemNAME="World Writeables Directories for non-root Users";
-  cmdRESPONSE "find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' | grep -v root ";
+  cmdRESPONSE "find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' | grep -v root ";
 
   systemNAME="World Writeables Files";
-  cmdRESPONSE "find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0    002 \) -exec ls -l '{}' ';'";
+  cmdRESPONSE "find / \( -wholename '/proc/*' -prune \) -o \( -type f -perm -o+w \) -exec ls -l '{}' ';'";
 
   systemNAME="SUID/GUID Files and Directories";
   cmdRESPONSE "ls -ahlR /root";
