@@ -23,34 +23,13 @@ from sys import version_info
 if version_info >= (3,5):
     #import subprocess as sub
     from subprocess import run, PIPE
-    # loop through dictionary, execute the commands, store the results, return updated dict
-    def execCmd(cmdDict):
-        ''' for versions >= 3.5 '''
-        for item in cmdDict:
-            cmd = cmdDict[item]["cmd"]
-            try:
-                process = run(cmd, stdout=PIPE, stderr=PIPE, shell=True)
-                results = process.stdout.decode().split('\n')
-            except Exception as e:
-                results = ['[-] failed: {}'.format(e)]
-            cmdDict[item]["results"]=results
-        return cmdDict
-
+    def do_cmd(cmd):
+        return run(cmd, stdout=PIPE, stderr=PIPE, shell=True).stdout
 elif version_info >= (3,):
     #import os # older version of python, need to use ### instead
-    from subprocess import check_output, PIPE
-    # loop through dictionary, execute the commands, store the results, return updated dict
-    def execCmd(cmdDict):
-        ''' for version < 3.5 '''
-        for item in cmdDict:
-            cmd = cmdDict[item]["cmd"]
-            try:
-                echo_stdout = check_output(cmd, shell=True)  
-                results = echo_stdout.decode().split('\n')
-            except Exception as e:
-                results = ['[-] failed: {}'.format(e)]
-            cmdDict[item]["results"]=results
-        return cmdDict
+    from subprocess import check_output, STDOUT
+    def do_cmd(cmd):
+        return check_output(cmd, shell=True, stderr=STDOUT)
 else:
     print("Error: please run in python3 only.")
     exit(1)
@@ -67,7 +46,18 @@ def header(message):
     print(bigline)
     print("")
 
-
+# loop through dictionary, execute the commands, store the results, return updated dict
+def execCmd(cmdDict):
+    for item in cmdDict:
+        cmd = cmdDict[item]["cmd"]
+        try:
+            stdout = do_cmd(cmd)
+            results = stdout.decode().split('\n')
+        except Exception as e:
+            results = ['[-] failed: {}'.format(e)]
+        cmdDict[item]["results"]=results
+        
+    return cmdDict
 
 # print results for each previously executed command, no return value
 def printResults(cmdDict):
