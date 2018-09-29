@@ -19,14 +19,17 @@
 ###############################################################################################################
 
 # conditional import for older versions of python not compatible with subprocess
-try:
+from sys import version_info
+if version_info >= (3,5):
     #import subprocess as sub
     from subprocess import run, PIPE
     compatmode = 0 # newer version of python, no need for compatibility mode
-except ImportError:
+elif version_info >= (3,):
     #import os # older version of python, need to use ### instead
     from subprocess import check_output, PIPE
     compatmode = 1
+else:
+    print("Error: please run in python3 only.")
 
 # title / formatting
 bigline = "=" * 80
