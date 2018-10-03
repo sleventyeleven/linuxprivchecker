@@ -19,14 +19,20 @@
 ###############################################################################################################
 
 # conditional import for older versions of python not compatible with subprocess
-try:
+from sys import version_info
+if version_info >= (3,5):
     #import subprocess as sub
     from subprocess import run, PIPE
-    compatmode = 0 # newer version of python, no need for compatibility mode
-except ImportError:
+    def do_cmd(cmd):
+        return run(cmd, stdout=PIPE, stderr=PIPE, shell=True).stdout
+elif version_info >= (3,):
     #import os # older version of python, need to use ### instead
-    from subprocess import check_output, PIPE
-    compatmode = 1
+    from subprocess import check_output, STDOUT
+    def do_cmd(cmd):
+        return check_output(cmd, shell=True, stderr=STDOUT)
+else:
+    print("Error: please run in python3 only.")
+    exit(1)
 
 # title / formatting
 bigline = "=" * 80
@@ -45,12 +51,8 @@ def execCmd(cmdDict):
     for item in cmdDict:
         cmd = cmdDict[item]["cmd"]
         try:
-            if compatmode == 0: # newer version of python, use preferred subprocess
-                process = run(cmd, stdout=PIPE, stderr=PIPE, shell=True)
-                results = process.stdout.decode().split('\n')
-            else: # older version of python, use os.popen
-                echo_stdout = check_output(cmd, shell=True)  
-                results = stdout.decode().split('\n')
+            stdout = do_cmd(cmd)
+            results = stdout.decode().split('\n')
         except Exception as e:
             results = ['[-] failed: {}'.format(e)]
         cmdDict[item]["results"]=results
