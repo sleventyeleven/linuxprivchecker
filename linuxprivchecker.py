@@ -227,7 +227,13 @@ devTools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find n
 execCmd(devTools)
 
 print("[+] Related Shell Escape Sequences...\n")
-escapeCmd = {"vi":[":!bash", ":set shell=/bin/bash:shell"], "awk":["awk 'BEGIN {system(\"/bin/bash\")}'"], "perl":["perl -e 'exec \"/bin/bash\";'"], "find":["find / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;"], "nmap":["--interactive"]}
+
+escapeCmd = {"vi":[":!bash", ":set shell=/bin/bash:shell"], 
+            "awk":["awk 'BEGIN {system(\"/bin/bash\")}'"], 
+            "perl":["perl -e 'exec \"/bin/bash\";'"], 
+            "find":["find / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;"], 
+            "nmap":["--interactive"]}
+
 for cmd in escapeCmd:
     for result in devTools["TOOLS"]["results"]:
         if cmd in result:
