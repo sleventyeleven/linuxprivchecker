@@ -8,12 +8,15 @@ info and search for common privilege escalation vectors such as word
 writable files, misconfigurations, clear-text password and applicable 
 exploits.
 
-## [Original Author]: 
-Mike Czumak (T_v3rn1x) -- @SecuritySift
-## [Contributors]:
+## [Maintainer]:
 Mike Merrill (linted) -- https://github.com/linted
 
+## [Contributors]:
 James Hogan (5aru) -- https://github.com/5aru
+Ali Kaba -- https://github.com/alibkaba
+
+## [Original Author]: 
+Mike Czumak (T_v3rn1x) -- @SecuritySift
 
 ## [Modification, Distribution, and Attribution]:
 Permission is herby granted, free of charge, to any person obtaining a copy
