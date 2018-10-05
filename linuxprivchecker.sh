@@ -170,12 +170,16 @@ filePERMISSIONS(){
   cmdRESPONSE "find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' | grep root";
 
   systemNAME="World Writeables Directories for non-root Users";
+
   cmdRESPONSE "find / \( -type d -perm -o+w \) -exec ls -ld '{}' ';' | grep -v root ";
 
   systemNAME="World Writeables Files";
   cmdRESPONSE "find / \( -wholename '/proc/*' -prune \) -o \( -type f -perm -o+w \) -exec ls -l '{}' ';'";
 
   systemNAME="SUID/GUID Files and Directories";
+  cmdRESPONSE "find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null";
+
+  systemNAME="Checking if root's home folder is accessible";
   cmdRESPONSE "ls -ahlR /root";
 
   systemNAME="Configuration Files Containing Keyword 'password'";
