@@ -1,24 +1,18 @@
-#!/usr/env python
+#!/usr/bin/python
 
 ###############################################################################################################
 ## [Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script
 ## [Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
+## [Maintainer]: n3k00n3 -- @lampiaosec
 ##-------------------------------------------------------------------------------------------------------------
-## [Details]: 
-## This script is intended to be executed locally on a Linux box to enumerate basic system info and 
+## [Details]:
+## This script is intended to be executed locally on a Linux box to enumerate basic system info and
 ## search for common privilege escalation vectors such as world writable files, misconfigurations, clear-text
-## passwords and applicable exploits. 
+## passwords and applicable exploits.
 ##-------------------------------------------------------------------------------------------------------------
-## [Warning]:
-## This script comes as-is with no promise of functionality or accuracy.  I have no plans to maintain updates, 
-## I did not write it to be efficient and in some cases you may find the functions may not produce the desired 
-## results.  For example, the function that links packages to running processes is based on keywords and will 
-## not always be accurate.  Also, the exploit list included in this function will need to be updated over time. 
-## Feel free to change or improve it any way you see fit.
-##-------------------------------------------------------------------------------------------------------------   
 ## [Modification, Distribution, and Attribution]:
 ## You are free to modify and/or distribute this script as you wish.  I only ask that you maintain original
-## author attribution and not attempt to sell it or incorporate it into any commercial offering (as if it's 
+## author attribution and not attempt to sell it or incorporate it into any commercial offering (as if it's
 ## worth anything anyway :)
 ###############################################################################################################
 
@@ -31,11 +25,23 @@ except ImportError:
     compatmode = 1
 
 # title / formatting
-bigline = "================================================================================================="
-smlline = "-------------------------------------------------------------------------------------------------"
+bigline = "======================================================================================="
+smlline = "---------------------------------------------------------------------------------------"
 
-print bigline 
-print "LINUX PRIVILEGE ESCALATION CHECKER"
+# Colors to make the outuput better
+red = '\033[31m'
+green = '\033[32m'
+blue = '\033[34m'
+
+print bigline
+print """
+    __    _                  ____       _       ________              __
+   / /   (_)___  __  ___  __/ __ \_____(_)   __/ ____/ /_  ___  _____/ /_____  _____
+  / /   / / __ \/ / / / |/_/ /_/ / ___/ / | / / /   / __ \/ _ \/ ___/ //_/ _ \/ ___/
+ / /___/ / / / / /_/ />  </ ____/ /  / /| |/ / /___/ / / /  __/ /__/ ,< /  __/ /
+/_____/_/_/ /_/\__,_/_/|_/_/   /_/  /_/ |___/\____/_/ /_/\___/\___/_/|_|\___/_/
+
+"""
 print bigline
 print
 
@@ -47,7 +53,7 @@ def execCmd(cmdDict):
             out, error = sub.Popen([cmd], stdout=sub.PIPE, stderr=sub.PIPE, shell=True).communicate()
             results = out.split('\n')
 	else: # older version of python, use os.popen
-	    echo_stdout = os.popen(cmd, 'r')  
+	    echo_stdout = os.popen(cmd, 'r')
             results = echo_stdout.read().split('\n')
         cmdDict[item]["results"]=results
     return cmdDict
@@ -78,8 +84,8 @@ print "[*] GETTING BASIC SYSTEM INFO...\n"
 
 results=[]
 
-sysInfo = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System","results":results}, 
-	   "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results}, 
+sysInfo = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System","results":results},
+	   "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results},
 	   "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results}
 	  }
 
@@ -145,7 +151,7 @@ fdPerms = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) 
 	   "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible", "results":results}
 	  }
 
-fdPerms = execCmd(fdPerms) 
+fdPerms = execCmd(fdPerms)
 printResults(fdPerms)
 
 pwdFiles = {"LOGPWDS":{"cmd":"find /var/log -name '*.log' 2>/dev/null | xargs -l10 egrep 'pwd|password' 2>/dev/null", "msg":"Logs containing keyword 'password'", "results":results},
@@ -188,9 +194,9 @@ procs = getAppProc["PROCS"]["results"]
 pkgs = getAppProc["PKGS"]["results"]
 supusers = userInfo["SUPUSERS"]["results"]
 procdict = {} # dictionary to hold the processes running as super users
-  
+
 for proc in procs: # loop through each process
-    relatedpkgs = [] # list to hold the packages related to a process    
+    relatedpkgs = [] # list to hold the packages related to a process
     try:
 	for user in supusers: # loop through the known super users
 	    if (user != "") and (user in proc): # if the process is being run by a super user
@@ -200,8 +206,8 @@ for proc in procs: # loop through each process
 			procname = splitname[len(splitname)-1]
         	for pkg in pkgs: # loop through the packages
 		    if not len(procname) < 3: # name too short to get reliable package results
-	    	        if procname in pkg: 
-			    if procname in procdict: 
+	    	        if procname in pkg:
+			    if procname in procdict:
 			        relatedpkgs = procdict[proc] # if already in the dict, grab its pkg list
 			    if pkg not in relatedpkgs:
 			        relatedpkgs.append(pkg) # add pkg to the list
@@ -213,15 +219,15 @@ for key in procdict:
     print "    " + key # print the process name
     try:
         if not procdict[key][0] == "": # only print the rest if related packages were found
-            print "        Possible Related Packages: " 
-            for entry in procdict[key]: 
+            print "        Possible Related Packages: "
+            for entry in procdict[key]:
                 print "            " + entry # print each related package
     except:
 	pass
 
 # EXPLOIT ENUMERATION
 
-# First discover the avaialable tools 
+# First discover the avaialable tools
 print
 print "[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING...\n"
 
@@ -329,13 +335,13 @@ for sploit in sploits:
     if (version >= sploits[sploit]["minver"]) and (version <= sploits[sploit]["maxver"]):
 	# next check language applicability
 	if (sploits[sploit]["lang"] == "c") and (("gcc" in str(langs)) or ("cc" in str(langs))):
-	    lang = 1 # language found, increase applicability score 
-	elif sploits[sploit]["lang"] == "sh": 
-	    lang = 1 # language found, increase applicability score 
+	    lang = 1 # language found, increase applicability score
+	elif sploits[sploit]["lang"] == "sh":
+	    lang = 1 # language found, increase applicability score
 	elif (sploits[sploit]["lang"] in str(langs)):
 	    lang = 1 # language found, increase applicability score
 	if lang == 0:
-	    sploitout = sploitout + "**" # added mark if language not detected on system 
+	    sploitout = sploitout + "**" # added mark if language not detected on system
 	# next check keyword matches to determine if some sploits have a higher probability of success
 	for loc in sploits[sploit]["keywords"]["loc"]:
 	    if loc == "proc":
@@ -347,7 +353,7 @@ for sploit in sploits:
 	    elif loc == "os":
 		if (keyword in os) or (keyword in kernel):
 		    highprob.append(sploitout) # if sploit is specifically applicable to this OS consider it a higher probability/applicability
-		    break  
+		    break
 	    elif loc == "mnt":
 		if keyword in mount:
 		    highprob.append(sploitout) # if sploit is specifically applicable to a mounted file system consider it a higher probability/applicability
@@ -358,7 +364,7 @@ for sploit in sploits:
 print "    Note: Exploits relying on a compile/scripting language not detected on this system are marked with a '**' but should still be tested!"
 print
 
-print "    The following exploits are ranked higher in probability of success because this script detected a related running process, OS, or mounted file system" 
+print "    The following exploits are ranked higher in probability of success because this script detected a related running process, OS, or mounted file system"
 for exploit in highprob:
     print "    - " + exploit
 print
@@ -367,6 +373,6 @@ print "    The following exploits are applicable to this kernel version and shou
 for exploit in avgprob:
     print "    - " + exploit
 
-print 	
+print
 print "Finished"
 print bigline
