@@ -2,7 +2,8 @@
 
 # Linuxprivchecker.py
 ## A Linux Privilege Escal:ation Check Script
-### Author: Mike Czumak (T_v3rn1x) -- @SecuritySift
+###  Orginal Author: Mike Czumak (T_v3rn1x) -- @SecuritySift
+###  Current Maintainer: Michael Contino (@Sleventyeleven)
 
 This script is intended to be executed locally on a Linux box to enumerate basic system info and
 search for common privilege escalation vectors such as world writable files, misconfigurations, clear-text
