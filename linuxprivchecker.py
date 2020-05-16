@@ -330,7 +330,7 @@ def enum_root_pkg_proc(pkgsandprocs, userinfo):
                 print "        Possible Related Packages: "
                 for entry in procdict[key]:
                     print "            " + entry  # print each related package
-        except KeyError:
+        except IndexError:
             pass
 
 
