@@ -530,7 +530,7 @@ if __name__ == '__main__':
         parser.add_argument('-w', '--write', help='The file to write results (needs to be writable for current user)', required=False, default='linuxprivchecker.log')
         args = parser.parse_args()
 
-        if args.searches():
+        if args.searches:
             processsearches = False
         else:
             processsearches = True
