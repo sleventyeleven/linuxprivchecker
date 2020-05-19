@@ -36,6 +36,8 @@ except ImportError:
     import os  # older version of python, need to use os instead
     compatmode = 1
 
+# import sys for io redirection
+import sys
 
 # title / formatting
 bigline = "======================================================================================="
@@ -524,16 +526,32 @@ if __name__ == '__main__':
 
     try:
         import argparse
+        import sys
+
         # Parse out all of the command line arguments
         parser = argparse.ArgumentParser(description='Try to gather system information and find likely exploits')
         parser.add_argument('-s', '--searches', help='Skip time consumming or resource intensive searches', required=False, action='store_true')
-        parser.add_argument('-w', '--write', help='The file to write results (needs to be writable for current user)', required=False, default='linuxprivchecker.log')
+        parser.add_argument('-w', '--write', help='Wether to write a log file, can be used with -0 to specify name/location ', required=False, action='store_true')
+        parser.add_argument('-o', '--outfile', help='The file to write results (needs to be writable for current user)', required=False, default='linuxprivchecker.log')
         args = parser.parse_args()
 
         if args.searches:
             processsearches = False
         else:
             processsearches = True
+
+        # if write is requeted, create a custom logger to send stout to log file as well
+        if args.write:
+            class Logger(object):
+                def __init__(self):
+                    self.terminal = sys.stdout
+                    self.log = open(args.outfile, 'a')
+
+                def write(self, message):
+                    self.terminal.write(message)
+                    self.log.write(message)
+            sys.stdout = Logger()
+
     except ImportError:
         print 'Arguments could not be processed, defaulting to print everything'
         processsearches = True
