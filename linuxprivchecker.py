@@ -190,14 +190,15 @@ def enum_user_info():
 
     return userinfo
 
+
 def enum_user_history_files():
     """
-    Enumerate User Information (enum_user_info)
-    Enumerate current user information and save the results
+    Enumerate User History Files (enum_user_history_files)
+    Enumerate current user History Files and save content to results
 
-    :return: Dictionary with the user information commands and results
+    :return: None
     """
-    print "\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n"
+    print "\n[*] ENUMERATING USER History Files..\n"
 
     historyfiles = {
         "RHISTORY": {"cmd": "ls -la /root/.*_history 2>/dev/null", "msg": " See if you have access too Root user history (depends on privs)", "results": []},
@@ -208,16 +209,16 @@ def enum_user_history_files():
         "PHPHISTORY": {"cmd": "cat ~/.php_history 2>/dev/null", "msg": " Try to get the contents of php history file for current user", "results": []}
     }
 
-    historyfiles = execute_cmd( historyfiles)
+    historyfiles = execute_cmd(historyfiles)
     print_results(historyfiles)
 
 
 def enum_rc_files():
     """
-    Enumerate User Information (enum_user_info)
-    Enumerate current user information and save the results
+    Enumerate User RCFiles (enum_rc_files)
+    Enumerate current user RC Files and save content to results
 
-    :return: Dictionary with the user information commands and results
+    :return: None
     """
     print "\n[*] ENUMERATING USER *.rc Style Files For INFO...\n"
 
@@ -612,7 +613,6 @@ if __name__ == '__main__':
 
     # Enumerate Basic RC Files
     enum_rc_files()
-
 
     # Enumerate Basic Filesystem Information
     driveinfo = enum_filesystem_info()
