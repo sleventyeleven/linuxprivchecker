@@ -23,25 +23,18 @@ If the system your testing has Python 2.6 or high and/or argparser installed, yo
 If importing argparser does not work, all checks will be run and no log file will be written.
 However, you can still use terminal redirection to create a log, such as 'python linuxprivchecker.py > linuxprivchecker.log.'
 
-=======================================================================================
-
-    __    _                  ____       _       ________              __
-   / /   (_)___  __  ___  __/ __ \_____(_)   __/ ____/ /_  ___  _____/ /_____  _____
-  / /   / / __ \/ / / / |/_/ /_/ / ___/ / | / / /   / __ \/ _ \/ ___/ //_/ _ \/ ___/
- / /___/ / / / / /_/ />  </ ____/ /  / /| |/ / /___/ / / /  __/ /__/ ,< /  __/ /
-/_____/_/_/ /_/\__,_/_/|_/_/   /_/  /_/ |___/\____/_/ /_/\___/\___/_/|_|\___/_/
-
-
-=======================================================================================
 usage: linuxprivchecker.py [-h] [-s] [-w] [-o OUTFILE]
 
 Try to gather system information and find likely exploits
 
 optional arguments:
-  -h, --help            show this help message and exit
+  -h, --help           show this help message and exit
+  
   -s, --searches        Skip time consumming or resource intensive searches
+  
   -w, --write           Wether to write a log file, can be used with -0 to
                         specify name/location
+                        
   -o OUTFILE, --outfile OUTFILE
                         The file to write results (needs to be writable for
                         current user)
