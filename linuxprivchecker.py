@@ -17,8 +17,6 @@
 ## worth anything anyway :)
 ###############################################################################################################
 TODO:
-Add support for additional history files
-Add search for .*rc system configuration files
 Add search for writable and/or missing library files
 Add detection and enumeratation for systemd
 Add search for accessiable ssh sockets
@@ -35,22 +33,6 @@ try:
 except ImportError:
     import os  # older version of python, need to use os instead
     compatmode = 1
-
-# import sys for io redirection
-import sys
-
-# title / formatting
-bigline = "======================================================================================="
-print bigline
-print """
-    __    _                  ____       _       ________              __
-   / /   (_)___  __  ___  __/ __ \_____(_)   __/ ____/ /_  ___  _____/ /_____  _____
-  / /   / / __ \/ / / / |/_/ /_/ / ___/ / | / / /   / __ \/ _ \/ ___/ //_/ _ \/ ___/
- / /___/ / / / / /_/ />  </ ____/ /  / /| |/ / /___/ / / /  __/ /__/ ,< /  __/ /
-/_____/_/_/ /_/\__,_/_/|_/_/   /_/  /_/ |___/\____/_/ /_/\___/\___/_/|_|\___/_/
-
-"""
-print bigline
 
 
 def execute_cmd(cmddict):
@@ -245,7 +227,8 @@ def enum_rc_files():
         "SCREENRC": {"cmd": "cat ~/.screenrc 2>/dev/null", "msg": " Try to get the contents of screen rc file for current user", "results": []},
         "GSCREENRC": {"cmd": "cat /etc/screenrc 2>/dev/null", "msg": "Try to get the contents of screen rc file form global config file", "results": []},
         "VIRC": {"cmd": "cat ~/.virc 2>/dev/null", "msg": " Try to get the contents of vi rc file for current user", "results": []},
-        "MYSQLRC": {"cmd": "cat ~/.mysqlrc 2>/dev/null", "msg": " Try to get the contents of mysql rc file for current user", "results": []}
+        "MYSQLRC": {"cmd": "cat ~/.mysqlrc 2>/dev/null", "msg": " Try to get the contents of mysql rc file for current user", "results": []},
+        "NETRC": {"cmd": "cat ~/.netrc 2>/dev/null", "msg": " Try to get the contents of legacy net rc file for current user", "results": []},
     }
 
     rcfiles = execute_cmd(rcfiles)
@@ -585,6 +568,9 @@ if __name__ == '__main__':
 
         # if write is requeted, create a custom logger to send stout to log file as well
         if args.write:
+            # import sys for io redirection
+            import sys
+
             class Logger(object):
                 def __init__(self):
                     self.terminal = sys.stdout
@@ -599,6 +585,19 @@ if __name__ == '__main__':
         print 'Arguments could not be processed, defaulting to print everything'
         processsearches = True
 
+    # title / formatting
+    bigline = "======================================================================================="
+    print bigline
+    print """
+        __    _                  ____       _       ________              __
+       / /   (_)___  __  ___  __/ __ \_____(_)   __/ ____/ /_  ___  _____/ /_____  _____
+      / /   / / __ \/ / / / |/_/ /_/ / ___/ / | / / /   / __ \/ _ \/ ___/ //_/ _ \/ ___/
+     / /___/ / / / / /_/ />  </ ____/ /  / /| |/ / /___/ / / /  __/ /__/ ,< /  __/ /
+    /_____/_/_/ /_/\__,_/_/|_/_/   /_/  /_/ |___/\____/_/ /_/\___/\___/_/|_|\___/_/
+
+    """
+    print bigline
+
     # Enumerate Basic User Information
     userinfo = enum_user_info()
 
@@ -607,6 +606,13 @@ if __name__ == '__main__':
 
     # Enumerate Basic Network Information
     enum_network_info()
+
+    # Enumerate User History Files
+    enum_user_history_files()
+
+    # Enumerate Basic RC Files
+    enum_rc_files()
+
 
     # Enumerate Basic Filesystem Information
     driveinfo = enum_filesystem_info()
