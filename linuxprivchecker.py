@@ -193,9 +193,9 @@ def enum_user_info():
         "ID": {"cmd": "id", "msg": "Current User ID", "results": []},
         "ALLUSERS": {"cmd": "cat /etc/passwd", "msg": "All users", "results": []},
         "SUPUSERS": {"cmd": "grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg": "Super Users Found:", "results": []},
-        "HISTORY": {"cmd": "ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg": "Root and current user history (depends on privs)", "results": []},
         "ENV": {"cmd": "env 2>/dev/null | grep -v 'LS_COLORS'", "msg": "Environment", "results": []},
         "SUDOERS": {"cmd": "cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg": "Sudoers (privileged)", "results": []},
+        "SCREENS": {"cmd": "screen -ls 2>/dev/null", "msg": "List out any screens running for the current user", "results": []},
         "LOGGEDIN": {"cmd": "w 2>/dev/null", "msg": "Logged in User Activity", "results": []}
     }
 
@@ -207,6 +207,49 @@ def enum_user_info():
         exit()
 
     return userinfo
+
+def enum_user_history_files():
+    """
+    Enumerate User Information (enum_user_info)
+    Enumerate current user information and save the results
+
+    :return: Dictionary with the user information commands and results
+    """
+    print "\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n"
+
+    historyfiles = {
+        "RHISTORY": {"cmd": "ls -la /root/.*_history 2>/dev/null", "msg": " See if you have access too Root user history (depends on privs)", "results": []},
+        "BASHHISTORY": {"cmd": "cat ~/.bash_history 2>/dev/null", "msg": " Get the contents of bash history file for current user", "results": []},
+        "NANOHISTORY": {"cmd": "cat ~/.nano_history 2>/dev/null", "msg": " Try to get the contents of nano history file for current user", "results": []},
+        "ATFTPHISTORY": {"cmd": "cat ~/.atftp_history 2>/dev/null", "msg": " Try to get the contents of atftp history file for current user", "results": []},
+        "MYSQLHISTORY": {"cmd": "cat ~/.mysql_history 2>/dev/null", "msg": " Try to get the contents of mysql history file for current user", "results": []},
+        "PHPHISTORY": {"cmd": "cat ~/.php_history 2>/dev/null", "msg": " Try to get the contents of php history file for current user", "results": []}
+    }
+
+    historyfiles = execute_cmd( historyfiles)
+    print_results(historyfiles)
+
+
+def enum_rc_files():
+    """
+    Enumerate User Information (enum_user_info)
+    Enumerate current user information and save the results
+
+    :return: Dictionary with the user information commands and results
+    """
+    print "\n[*] ENUMERATING USER *.rc Style Files For INFO...\n"
+
+    rcfiles = {
+        "GBASHRC" : {"cmd": "cat /etc/bashrc 2>/dev/null", "msg": " Get the contents of bash rc file form global config file", "results": []},
+        "BASHRC": {"cmd": "cat ~/.bashrc 2>/dev/null", "msg": "Get the contents of bash rc file for current user", "results": []},
+        "SCREENRC": {"cmd": "cat ~/.screenrc 2>/dev/null", "msg": " Try to get the contents of screen rc file for current user", "results": []},
+        "GSCREENRC": {"cmd": "cat /etc/screenrc 2>/dev/null", "msg": "Try to get the contents of screen rc file form global config file", "results": []},
+        "VIRC": {"cmd": "cat ~/.virc 2>/dev/null", "msg": " Try to get the contents of vi rc file for current user", "results": []},
+        "MYSQLRC": {"cmd": "cat ~/.mysqlrc 2>/dev/null", "msg": " Try to get the contents of mysql rc file for current user", "results": []}
+    }
+
+    rcfiles = execute_cmd(rcfiles)
+    print_results(rcfiles)
 
 
 def search_file_perms():
