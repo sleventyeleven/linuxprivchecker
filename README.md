@@ -9,6 +9,14 @@ This script is intended to be executed locally on a Linux box to enumerate basic
 search for common privilege escalation vectors such as world writable files, misconfigurations, clear-text
 passwords and applicable exploits.
 
+Linuxprivchecker is designed to identify potential areas to investigate further, not provide direct action or exploitation.
+This is to help users further learn how these privilege escalations work and keep it in line with the rules,
+for self directed exploitation, laid out for the OSCP, HTB, and other CTFs/exams.
+
+We will try our best to addtional information and reference where possible. As the current Maintainer,
+I also plan to accompany new feature adds, with a post on my blog (hackersvanguard.com) to further explain
+each potential area for privilege escalation and what criteria may be required.
+
 ## Command Options and arguments
 
 If the system your testing has Python 2.6 or high and/or argparser installed, you can utilize the following options.
