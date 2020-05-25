@@ -178,7 +178,7 @@ def enum_user_info():
         "ENV": {"cmd": "env 2>/dev/null | grep -v 'LS_COLORS'", "msg": "Environment", "results": []},
         "SUDOERS": {"cmd": "cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg": "Sudoers (privileged)", "results": []},
         "SCREENS": {"cmd": "screen -ls 2>/dev/null", "msg": "List out any screens running for the current user", "results": []},
-        "LOGGEDIN": {"cmd": "w 2>/dev/null", "msg": "Logged in User Activity", "results": []}
+        "LOGGEDIN": {"cmd": "who -a 2>/dev/null", "msg": "Logged in User Activity", "results": []}
     }
 
     userinfo = execute_cmd(userinfo)
