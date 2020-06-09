@@ -4,7 +4,7 @@
 ###############################################################################################################
 ## [Title]: linuxprivchecker.py -- a Linux Privilege Escalation Check Script
 ## [Original Author]: Mike Czumak (T_v3rn1x) -- @SecuritySift
-## [Maintainer]: Michael Contino -- @Sleventyeleven
+##  [Maintainer]: Michael Contino -- @Sleventyeleven
 ##-------------------------------------------------------------------------------------------------------------
 ## [Details]:
 ## This script is intended to be executed locally on a Linux box to enumerate basic system info and
