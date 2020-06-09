@@ -206,7 +206,10 @@ def enum_user_history_files():
         "NANOHISTORY": {"cmd": "cat ~/.nano_history 2>/dev/null", "msg": " Try to get the contents of nano history file for current user", "results": []},
         "ATFTPHISTORY": {"cmd": "cat ~/.atftp_history 2>/dev/null", "msg": " Try to get the contents of atftp history file for current user", "results": []},
         "MYSQLHISTORY": {"cmd": "cat ~/.mysql_history 2>/dev/null", "msg": " Try to get the contents of mysql history file for current user", "results": []},
-        "PHPHISTORY": {"cmd": "cat ~/.php_history 2>/dev/null", "msg": " Try to get the contents of php history file for current user", "results": []}
+        "PHPHISTORY": {"cmd": "cat ~/.php_history 2>/dev/null", "msg": " Try to get the contents of php history file for current user", "results": []},
+        "PYTHONHISTORY": {"cmd": "cat ~/.python_history 2>/dev/null", "msg": " Try to get the contents of python history file for current user", "results": []},
+        "REDISHISTORY": {"cmd": "cat ~/.rediscli_history 2>/dev/null", "msg": " Try to get the contents of redis cli history file for current user", "results": []},
+        "TDSQLHISTORY": {"cmd": "cat ~/.tdsql_history 2>/dev/null", "msg": " Try to get the contents of tdsql history file for current user", "results": []}
     }
 
     historyfiles = execute_cmd(historyfiles)
@@ -229,7 +232,7 @@ def enum_rc_files():
         "GSCREENRC": {"cmd": "cat /etc/screenrc 2>/dev/null", "msg": "Try to get the contents of screen rc file form global config file", "results": []},
         "VIRC": {"cmd": "cat ~/.virc 2>/dev/null", "msg": " Try to get the contents of vi rc file for current user", "results": []},
         "MYSQLRC": {"cmd": "cat ~/.mysqlrc 2>/dev/null", "msg": " Try to get the contents of mysql rc file for current user", "results": []},
-        "NETRC": {"cmd": "cat ~/.netrc 2>/dev/null", "msg": " Try to get the contents of legacy net rc file for current user", "results": []},
+        "NETRC": {"cmd": "cat ~/.netrc 2>/dev/null", "msg": " Try to get the contents of legacy net rc file for current user", "results": []}
     }
 
     rcfiles = execute_cmd(rcfiles)
