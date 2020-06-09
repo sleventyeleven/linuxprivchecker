@@ -304,7 +304,8 @@ def enum_procs_pkgs():
     otherapps = {
         "SUDO": {"cmd": "sudo -V | grep version 2>/dev/null", "msg": "Sudo Version (Check out http://www.exploit-db.com/search/?action=search&filter_page=1&filter_description=sudo)", "results": []},
         "APACHE": {"cmd": "apache2 -v; apache2ctl -M; httpd -v; apachectl -l 2>/dev/null", "msg": "Apache Version and Modules", "results": []},
-        "APACHECONF": {"cmd": "cat /etc/apache2/apache2.conf 2>/dev/null", "msg": "Apache Config File", "results": []}
+        "APACHECONF": {"cmd": "cat /etc/apache2/apache2.conf 2>/dev/null", "msg": "Apache Config File", "results": []},
+        "SSHAGENTS": {"cmd": "for AGENT in $(ls /tmp| egrep 'ssh-.{10}$'); do export SSH_AUTH_SOCK=/tmp/$AGENT/$(ls /tmp/$AGENT);echo $AGENT $(stat -c '%U' /tmp/$AGENT);timeout 10 ssh-add -l;done; 2>/dev/null", "msg": "Checking for Active SSH Agents", "results": []}
     }
 
     execute_cmd(otherapps)
