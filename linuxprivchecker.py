@@ -48,7 +48,7 @@ def execute_cmd(cmddict):
         cmd = cmddict[item]["cmd"]
         if compatmode == 0:  # newer version of python, use preferred subprocess
             out, error = sub.Popen([cmd], stdout=sub.PIPE, stderr=sub.PIPE, shell=True).communicate()
-            results = out.split('\n')
+            results = out.decode().split('\n')
         else:  # older version of python, use os.popen
             echo_stdout = os.popen(cmd, 'r')
             results = echo_stdout.read().split('\n')
@@ -71,12 +71,12 @@ def print_results(cmddict):
     for item in cmddict:
         msg = cmddict[item]["msg"]
         results = cmddict[item]["results"]
-        print "[+] " + msg
+        print("[+] " + msg)
 
         for result in results:
             if result.strip() != "":
-                print "    " + result.strip()
-    print
+                print("    " + result.strip())
+    print()
 
 
 def enum_system_info():
@@ -87,7 +87,7 @@ def enum_system_info():
     :return: Dictionary of system information results
     """
 
-    print "[*] GETTING BASIC SYSTEM INFO...\n"
+    print("[*] GETTING BASIC SYSTEM INFO...\n")
 
     sysinfo = {
         "OS": {"cmd": "cat /etc/issue", "msg": "Operating System", "results": []},
@@ -109,7 +109,7 @@ def enum_network_info():
     :return: Dictionary of Network information with results
     """
 
-    print "[*] GETTING NETWORKING INFO...\n"
+    print("[*] GETTING NETWORKING INFO...\n")
 
     netinfo = {
         "netinfo": {"cmd": "/sbin/ifconfig -a", "msg": "Interfaces", "results": []},
@@ -130,7 +130,7 @@ def enum_filesystem_info():
     TODO: Parse parse out the filesystem results for remote file systems and credentials
     """
     
-    print "[*] GETTING FILESYSTEM INFO...\n"
+    print("[*] GETTING FILESYSTEM INFO...\n")
 
     driveinfo = {
         "MOUNT": {"cmd": "mount", "msg": "Mount results", "results": []},
@@ -168,7 +168,7 @@ def enum_user_info():
 
     :return: Dictionary with the user information commands and results
     """
-    print "\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n"
+    print("\n[*] ENUMERATING USER AND ENVIRONMENTAL INFO...\n")
 
     userinfo = {
         "WHOAMI": {"cmd": "whoami", "msg": "Current User", "results": []},
@@ -185,7 +185,7 @@ def enum_user_info():
     print_results(userinfo)
 
     if "root" in userinfo["ID"]["results"][0]:
-        print "[!] ARE YOU SURE YOU'RE NOT ROOT ALREADY?\n"
+        print("[!] ARE YOU SURE YOU'RE NOT ROOT ALREADY?\n")
         exit()
 
     return userinfo
@@ -198,7 +198,7 @@ def enum_user_history_files():
 
     :return: None
     """
-    print "\n[*] ENUMERATING USER History Files..\n"
+    print("\n[*] ENUMERATING USER History Files..\n")
 
     historyfiles = {
         "RHISTORY": {"cmd": "ls -la /root/.*_history 2>/dev/null", "msg": " See if you have access too Root user history (depends on privs)", "results": []},
@@ -223,7 +223,7 @@ def enum_rc_files():
 
     :return: None
     """
-    print "\n[*] ENUMERATING USER *.rc Style Files For INFO...\n"
+    print("\n[*] ENUMERATING USER *.rc Style Files For INFO...\n")
 
     rcfiles = {
         "GBASHRC" : {"cmd": "cat /etc/bashrc 2>/dev/null", "msg": " Get the contents of bash rc file form global config file", "results": []},
@@ -247,7 +247,7 @@ def search_file_perms():
     :return: None
     """
     
-    print "[*] ENUMERATING FILE AND DIRECTORY PERMISSIONS/CONTENTS...\n"
+    print("[*] ENUMERATING FILE AND DIRECTORY PERMISSIONS/CONTENTS...\n")
 
     fdperms = {
         "WWDIRSROOT": {"cmd": "find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg": "World Writeable Directories for User/Group 'Root'", "results": []},
@@ -289,7 +289,7 @@ def enum_procs_pkgs():
     """
 
     # Processes and Applications
-    print "[*] ENUMERATING PROCESSES AND APPLICATIONS...\n"
+    print("[*] ENUMERATING PROCESSES AND APPLICATIONS...\n")
 
     if "debian" in sysinfo["KERNEL"]["results"][0] or "ubuntu" in sysinfo["KERNEL"]["results"][0]:
         getpkgs = "dpkg -l | awk '{$1=$4=\"\"; print $0}'"  # debian
@@ -326,7 +326,7 @@ def enum_root_pkg_proc(pkgsandprocs, userinfo):
 
     :return: The drive information Dictionary with the commands results included
     """
-    print "[*] IDENTIFYING PROCESSES AND PACKAGES RUNNING AS ROOT OR OTHER SUPERUSER...\n"
+    print("[*] IDENTIFYING PROCESSES AND PACKAGES RUNNING AS ROOT OR OTHER SUPERUSER...\n")
 
     # find the package information for the processes currently running
     # under root or another super user
@@ -357,12 +357,12 @@ def enum_root_pkg_proc(pkgsandprocs, userinfo):
             pass
 
     for key in procdict:
-        print "    " + key  # print the process name
+        print("    " + key)  # print the process name
         try:
             if not procdict[key][0] == "":  # only print the rest if related packages were found
-                print "        Possible Related Packages: "
+                print("        Possible Related Packages: ")
                 for entry in procdict[key]:
-                    print "            " + entry  # print each related package
+                    print("            " + entry)  # print each related package
         except IndexError:
             pass
 
@@ -375,7 +375,7 @@ def enum_dev_tools():
     :return: Dictionary of installed development tool results
     """
     
-    print "[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING...\n"
+    print("[*] ENUMERATING INSTALLED LANGUAGES/TOOLS FOR SPLOIT BUILDING...\n")
 
     devtools = {"TOOLS": {"cmd": "which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg": "Installed Tools", "results": []}}
     execute_cmd(devtools)
@@ -393,7 +393,7 @@ def enum_shell_esapes(devtools):
     :return: None
     """
     
-    print "[+] Related Shell Escape Sequences...\n"
+    print("[+] Related Shell Escape Sequences...\n")
 
     escapecmd = {
         "vi": [":!bash", ":set shell=/bin/bash:shell"],
@@ -407,7 +407,7 @@ def enum_shell_esapes(devtools):
         for result in devtools["TOOLS"]["results"]:
             if cmd in result:
                 for item in escapecmd[cmd]:
-                    print "    " + cmd + "-->\t" + item
+                    print("    " + cmd + "-->\t" + item)
 
 
 def find_likely_exploits(sysinfo, devtools, pkgsandprocs, driveinfo):
@@ -423,7 +423,7 @@ def find_likely_exploits(sysinfo, devtools, pkgsandprocs, driveinfo):
     TODO: Parse parse out the filesystem results for remote file systems and credentials
     """
     
-    print "[*] FINDING RELEVENT PRIVILEGE ESCALATION EXPLOITS...\n"
+    print("[*] FINDING RELEVENT PRIVILEGE ESCALATION EXPLOITS...\n")
 
     # Now check for relevant exploits (note: this list should be updated over time; source: Exploit-DB)
     # sploit format = sploit name : {minversion, maxversion, exploitdb#, language, {keywords for applicability}} -- current keywords are 'kernel', 'proc', 'pkg' (unused), and 'os'
@@ -540,17 +540,17 @@ def find_likely_exploits(sysinfo, devtools, pkgsandprocs, driveinfo):
                 else:
                     avgprob.append(sploitout)  # otherwise, consider average probability/applicability based only on kernel version
 
-    print "    Note: Exploits relying on a compile/scripting language not detected on this system are marked with a '**' but should still be tested!"
-    print
+    print("    Note: Exploits relying on a compile/scripting language not detected on this system are marked with a '**' but should still be tested!")
+    print()
 
-    print "    The following exploits are ranked higher in probability of success because this script detected a related running process, OS, or mounted file system"
+    print("    The following exploits are ranked higher in probability of success because this script detected a related running process, OS, or mounted file system")
     for exploit in highprob:
-        print "    - " + exploit
-    print
+        print("    - " + exploit)
+    print()
 
-    print "    The following exploits are applicable to this kernel version and should be investigated as well"
+    print("    The following exploits are applicable to this kernel version and should be investigated as well")
     for exploit in avgprob:
-        print "    - " + exploit
+        print("    - " + exploit)
 
 
 if __name__ == '__main__':
@@ -587,21 +587,21 @@ if __name__ == '__main__':
             sys.stdout = Logger()
 
     except ImportError:
-        print 'Arguments could not be processed, defaulting to print everything'
+        print("Arguments could not be processed, defaulting to print everything")
         processsearches = True
 
     # title / formatting
     bigline = "======================================================================================="
-    print bigline
-    print """
+    print(bigline)
+    print("""
         __    _                  ____       _       ________              __
        / /   (_)___  __  ___  __/ __ \_____(_)   __/ ____/ /_  ___  _____/ /_____  _____
       / /   / / __ \/ / / / |/_/ /_/ / ___/ / | / / /   / __ \/ _ \/ ___/ //_/ _ \/ ___/
      / /___/ / / / / /_/ />  </ ____/ /  / /| |/ / /___/ / / /  __/ /__/ ,< /  __/ /
     /_____/_/_/ /_/\__,_/_/|_/_/   /_/  /_/ |___/\____/_/ /_/\___/\___/_/|_|\___/_/
 
-    """
-    print bigline
+    """)
+    print(bigline)
 
     # Enumerate Basic User Information
     userinfo = enum_user_info()
@@ -645,5 +645,5 @@ if __name__ == '__main__':
         # Search for files with potential credentials
         search_file_passwords()
 
-    print "Finished"
-    print bigline
+    print("Finished")
+    print(bigline)
