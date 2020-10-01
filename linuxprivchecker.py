@@ -297,7 +297,7 @@ def enum_procs_pkgs():
         getpkgs = "rpm -qa | sort -u"  # RH/other
 
     pkgsandprocs = {
-        "PROCS": {"cmd": "ps aux | awk '{print $1,$2,$9,$10,$11}'", "msg": "Current processes", "results": []},
+        "PROCS": {"cmd": "ps waux | awk '{print $1,$2,$9,$10,$11}'", "msg": "Current processes", "results": []},
         "PKGS": {"cmd": getpkgs, "msg": "Installed Packages", "results": []}
     }
 
