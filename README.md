@@ -2,6 +2,7 @@
 
 # Linuxprivchecker.py
 ## A Linux Privilege Escalation Check Script
+[![Known Vulnerabilities](https://snyk.io/test/github/sleventyeleven/linuxprivchecker/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/sleventyeleven/linuxprivchecker?targetFile=requirements.txt)
 ###  Orginal Author: Mike Czumak (T_v3rn1x) -- @SecuritySift
 ###  Current Maintainer: Michael Contino (@Sleventyeleven)
 
