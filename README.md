@@ -17,6 +17,29 @@ We will try our best to addtional information and reference where possible. As t
 I also plan to accompany new feature adds, with a post on my blog (hackersvanguard.com) to further explain
 each potential area for privilege escalation and what criteria may be required.
 
+## Running on Legacy Python 2.6/2.7 System
+To run on legacy python >2.6 systems just get the all in one python script and run it.
+
+`wget https://raw.githubusercontent.com/sleventyeleven/linuxprivchecker/master/linuxprivchecker.py`
+
+`python linuxprivchecker.py -w -o linuxprivchecker.log`
+
+## Running on Current Python 3.X System (Beta)
+Right now Linuxprivchecker for python 3.X should be considered a stable beta versions.
+Issues can happen with the script and it certainly can miss possible vulnerabilities (open an issue or PR). 
+
+To run the python 3 version, just utilize pip.
+
+`pip install linuxprivchecker`
+
+Then just run via commandline if runpy is available.
+
+`linuxprivchecker -w -o linuxprivchecker.log`
+
+or if runpy fails to add the script to your path
+
+`python3 -m linuxprivchecker -w -o linuxprivchecker.log`
+
 ## Command Options and arguments
 
 If the system your testing has Python 2.6 or high and/or argparser installed, you can utilize the following options.
