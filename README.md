@@ -56,7 +56,7 @@ optional arguments:
   
   -s, --searches        Skip time consuming or resource intensive searches
   
-  -w, --write           Wether to write a log file, can be used with -0 to
+  -w, --write           Whether to write a log file, can be used with -0 to
                         specify name/location
                         
   -o OUTFILE, --outfile OUTFILE
