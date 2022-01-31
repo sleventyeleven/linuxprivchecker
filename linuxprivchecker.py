@@ -18,8 +18,8 @@
 ###############################################################################################################
 TODO:
 Add search for writable and/or missing library files
-Add detection and enumeratation for systemd
-Add search for accessiable ssh sockets
+Add detection and enumeration for systemd
+Add search for accessible ssh sockets
 Add search for ssh keys
 Add search for know access tokens
 Expand Sudo support to include rules in sudoers.d
@@ -561,8 +561,8 @@ if __name__ == '__main__':
 
         # Parse out all of the command line arguments
         parser = argparse.ArgumentParser(description='Try to gather system information and find likely exploits')
-        parser.add_argument('-s', '--searches', help='Skip time consumming or resource intensive searches', required=False, action='store_true')
-        parser.add_argument('-w', '--write', help='Wether to write a log file, can be used with -0 to specify name/location ', required=False, action='store_true')
+        parser.add_argument('-s', '--searches', help='Skip time consuming or resource intensive searches', required=False, action='store_true')
+        parser.add_argument('-w', '--write', help='Whether to write a log file, can be used with -0 to specify name/location ', required=False, action='store_true')
         parser.add_argument('-o', '--outfile', help='The file to write results (needs to be writable for current user)', required=False, default='linuxprivchecker.log')
         args = parser.parse_args()
 
