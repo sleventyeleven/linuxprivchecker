@@ -3,7 +3,7 @@
 # Linuxprivchecker.py
 ## A Linux Privilege Escalation Check Script
 [![Known Vulnerabilities](https://snyk.io/test/github/sleventyeleven/linuxprivchecker/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/sleventyeleven/linuxprivchecker?targetFile=requirements.txt)
-###  Orginal Author: Mike Czumak (T_v3rn1x) -- @SecuritySift
+###  Original Author: Mike Czumak (T_v3rn1x) -- @SecuritySift
 ###  Current Maintainer: Michael Contino (@Sleventyeleven)
 
 This script is intended to be executed locally on a Linux box to enumerate basic system info and
@@ -14,7 +14,7 @@ Linuxprivchecker is designed to identify potential areas to investigate further,
 This is to help users further learn how these privilege escalations work and keep it in line with the rules,
 for self directed exploitation, laid out for the OSCP, HTB, and other CTFs/exams.
 
-We will try our best to addtional information and reference where possible. As the current Maintainer,
+We will try our best to provide additional information and reference where possible. As the current Maintainer,
 I also plan to accompany new feature adds, with a post on my blog (hackersvanguard.com) to further explain
 each potential area for privilege escalation and what criteria may be required.
 
@@ -33,7 +33,7 @@ To run the python 3 version, just utilize pip.
 
 `pip install linuxprivchecker`
 
-Then just run via commandline if runpy is available.
+Then just run via command line if runpy is available.
 
 `linuxprivchecker -w -o linuxprivchecker.log`
 
@@ -54,7 +54,7 @@ Try to gather system information and find likely exploits
 optional arguments:
   -h, --help           show this help message and exit
   
-  -s, --searches        Skip time consumming or resource intensive searches
+  -s, --searches        Skip time consuming or resource intensive searches
   
   -w, --write           Wether to write a log file, can be used with -0 to
                         specify name/location
